@@ -134,7 +134,7 @@
 
         $.ajax({
             type: "POST",
-            url: "./databases/rawMaterial_unit/add.php",
+            url: "./databases/rawMaterial/unit/add.php",
             data: { unit: $('#unitInput').val() },
             success: function(response) {
                 if(response.status === "success") {
@@ -178,7 +178,7 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: './databases/rawMaterial_unit/delete.php?id=<?PHP echo $unit["id"]?>',
+            url: './databases/rawMaterial/unit/delete.php?id=<?PHP echo $unit["id"]?>',
             type: 'POST',
             data: formData,
             dataType: 'json',
@@ -224,7 +224,7 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: './databases/rawMaterial_unit/edit.php',
+            url: './databases/rawMaterial/unit/edit.php',
             type: 'POST',
             data: formData,
             dataType: 'json',

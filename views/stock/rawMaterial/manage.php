@@ -32,6 +32,14 @@ if($id == null){
                                 <div class="text-lg-right mt-3 mt-lg-0">
                                     <button class="btn btn-success" data-toggle="modal" data-target="#addMaterial"><i class="mdi mdi-plus-circle mr-1"></i> Create New Material</button>
 
+                                    <?PHP
+                                    $stmt = $pdo->query('SELECT * FROM unit');
+                                    $units = $stmt->fetchAll();
+
+                                    $stmt = $pdo->query('SELECT * FROM type');
+                                    $types = $stmt->fetchAll();
+                                    ?>
+
                                     <!-- Modal -->
                                     <div class="modal fade text-left" id="addMaterial" tabindex="-1" role="dialog" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
@@ -42,39 +50,45 @@ if($id == null){
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
                                                 </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-xl-6">
-                                                            <input type="file" class="dropify" data-height="250" />
-                                                        </div> <!-- end col -->
-                                                        <div class="col-xl-6">
-                                                            <div class="form-group">
-                                                                <label for="unit">Name</label>
-                                                                <input type="text" id="unit" class="form-control" placeholder="Ex. Pork, Meat, Coke, ...">
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="unit">Unit</label>
-                                                                <select class="form-control mb-3">
-                                                                    <option value="0">- Select Unit -</option>
-                                                                    <option value="1">kg</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="form-group">
-                                                                <label for="unit">Type</label>
-                                                                <select class="form-control mb-3">
-                                                                    <option value="0">- Select Type -</option>
-                                                                    <option value="1">Meat</option>
-                                                                </select>
+                                                <form id="rawMaterialForm" action="./databases/rawMaterial/manage/add.php" method="POST" enctype="multipart/form-data">
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-xl-6">
+                                                                <input type="file" name="fileToUpload" id="fileToUpload" class="dropify" data-height="250" />
+                                                            </div> <!-- end col -->
+                                                            <div class="col-xl-6">
+                                                                <div class="form-group">
+                                                                    <label for="name">Name</label>
+                                                                    <input type="text" id="name" name="name" class="form-control" placeholder="Ex. Pork, Meat, Coke, ..." required>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="unit">Unit</label>
+                                                                    <select class="form-control mb-3" name="unit">
+                                                                        <option value="0">- Select Unit -</option>
+                                                                        <?PHP foreach($units as $unit){?>
+                                                                            <option value="<?PHP echo $unit['id']?>"><?PHP echo $unit['unit']?></option>
+                                                                        <?PHP }?>
+                                                                    </select>
+                                                                </div>
+                                                                <div class="form-group">
+                                                                    <label for="unit">Type</label>
+                                                                    <select class="form-control mb-3" name="type">
+                                                                        <option value="0">- Select Type -</option>
+                                                                        <?PHP foreach($types as $type){?>
+                                                                            <option value="<?PHP echo $type['id']?>"><?PHP echo $type['type']?></option>
+                                                                        <?PHP }?>
+                                                                    </select>
+                                                                </div>
                                                             </div>
                                                         </div>
+                                                        
                                                     </div>
-                                                    
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-success">Create</button>
+                                                    </div>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <button type="button" class="btn btn-success">Create</button>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

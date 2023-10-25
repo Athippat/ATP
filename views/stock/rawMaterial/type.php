@@ -195,7 +195,7 @@
 
         $.ajax({
             type: "POST",
-            url: "./databases/rawMaterial_type/add.php",
+            url: "./databases/rawMaterial/type/add.php",
             data: formData,
             success: function(response) {
                 if(response.status === "success") {
@@ -239,7 +239,7 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: './databases/rawMaterial_type/delete.php?id=<?PHP echo $type["id"]?>',
+            url: './databases/rawMaterial/type/delete.php?id=<?PHP echo $type["id"]?>',
             type: 'POST',
             data: formData,
             dataType: 'json',
@@ -284,7 +284,7 @@
         let formData = $(this).serialize();
 
         $.ajax({
-            url: './databases/rawMaterial_type/edit.php',
+            url: './databases/rawMaterial/type/edit.php',
             type: 'POST',
             data: formData,
             dataType: 'json',
