@@ -10,6 +10,8 @@ if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){
 }
 
 switch ($page) {
+    
+    // Starter
     case "login" :
         require __DIR__ . '/views/auth/login.php';
         break;
@@ -20,40 +22,51 @@ switch ($page) {
         require __DIR__ . '/views/home.php';
         include './views/components/footer.php';
         break;
-        
+
+    // Stock
     case "order":
         $pageName = "Order";
         include './views/components/header.php';
-        require __DIR__ . '/views/order.php';
-        include './views/components/footer.php';
-        break;
-    case "rawMaterial_manage":
-        $pageName = "Raw Material | Management";
-        include './views/components/header.php';
-        require __DIR__ . '/views/rawMaterial/manage.php';
-        include './views/components/footer.php';
-        break;
-    
-    case "rawMaterial_unit":
-        $pageName = "Raw Material | Unit";
-        include './views/components/header.php';
-        require __DIR__ . '/views/rawMaterial/unit.php';
+        require __DIR__ . '/views/stock/order.php';
         include './views/components/footer.php';
         break;
 
+    case "rawMaterial_manage":
+        $pageName = "Raw Material | Management";
+        include './views/components/header.php';
+        require __DIR__ . '/views/stock/rawMaterial/manage.php';
+        include './views/components/footer.php';
+        break;
+    case "rawMaterial_unit":
+        $pageName = "Raw Material | Unit";
+        include './views/components/header.php';
+        require __DIR__ . '/views/stock/rawMaterial/unit.php';
+        include './views/components/footer.php';
+        break;
     case "rawMaterial_type":
         $pageName = "Raw Material | Type";
         include './views/components/header.php';
-        require __DIR__ . '/views/rawMaterial/type.php';
+        require __DIR__ . '/views/stock/rawMaterial/type.php';
         include './views/components/footer.php';
         break;
 
     case "menu":
         $pageName = "Menu";
         include './views/components/header.php';
-        require __DIR__ . '/views/menu.php';
+        require __DIR__ . '/views/stock/menu.php';
         include './views/components/footer.php';
         break;
+
+    // Employee
+
+    case "employee":
+        $pageName = "Employee";
+        include './views/components/header.php';
+        require __DIR__ . '/views/employee/employee.php';
+        include './views/components/footer.php';
+        break;
+
+    // 404
 
     default:
         http_response_code(404);

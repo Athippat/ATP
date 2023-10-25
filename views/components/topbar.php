@@ -83,8 +83,8 @@
             <div class="dropdown d-inline-block ml-2">
                 <button type="button" class="btn header-item" id="page-header-user-dropdown"
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
-                        alt="Header Avatar">
+                    <!-- <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
+                        alt="Header Avatar"> -->
                     <span class="d-none d-sm-inline-block ml-1"><?PHP echo $_SESSION['firstname'];?></span>
                     <i class="mdi mdi-chevron-down d-none d-sm-inline-block"></i>
                 </button>

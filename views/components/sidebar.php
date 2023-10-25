@@ -56,14 +56,16 @@
                     </ul>
                 </li>
 
-                <li class="<?PHP if($page=='menu') echo 'mm-active';?>"">
+                <li class="<?PHP if($page=='menu') echo 'mm-active';?>">
                     <a href="./index.php?page=menu" class="<?PHP if($page=='menu') echo 'active';?>"><i class="mdi mdi-book-open-variant"></i><span>Menu</span></a>
                 </li>
 
                 <!-- Employee -->
                 <li class="menu-title">Employee</li>
 
-                <li><a href="calendar.html"><i class="feather-calendar"></i><span>Calendar</span></a></li>
+                <li class="<?PHP if($page=='employee') echo 'mm-active';?>">
+                    <a href="./index.php?page=employee" class="<?PHP if($page=='employee') echo 'active';?>"><i class="mdi mdi-account-multiple"></i><span>Employee</span></a>
+                </li>
 
                 <li>
                     <a href="javascript: void(0);" class="has-arrow"><i class="feather-map"></i><span>Maps</span></a>
