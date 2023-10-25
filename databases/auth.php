@@ -16,6 +16,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             session_start();
             $_SESSION['loggedin'] = true;
             $_SESSION['username'] = $user['username'];
+            $_SESSION['firstname'] = $user['firstname'];
+            $_SESSION['lastname'] = $user['lastname'];
+            $_SESSION['nickname'] = $user['nickname'];
+            $_SESSION['permission'] = $user['permission'];
             header("Location: ../index.php?page=home");
             exit;
         } else {
