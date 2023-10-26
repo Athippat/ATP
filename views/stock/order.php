@@ -71,56 +71,154 @@
         </div>
         <!-- end row -->  
 
+        <?PHP
+        $stmt = $pdo->query('SELECT * FROM menu');
+        $menus = $stmt->fetchAll();
+        ?>
+
         <div class="row">
-            <div class="col-xl-3 col-lg-6 text-center">
-                <div class="card">
-                    <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="mb-1">Soup</h5>
-                        <p class="text-danger font-size-13">Out of raw material</p>
 
-                        <div class="row justify-content-center">
-                            <button class="btn btn-success mx-1 disabled"><i class="mdi mdi-shopping"></i> Serve</button>
-                        </div>
-                    </div>
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-            <?PHP for ($i=3; $i <= 10; $i++) {?>
-            <div class="col-xl-3 col-lg-6 text-center">
-                <div class="card">
-                    <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                    <div class="card-body">
-                        <h5 class="mb-1">Pork</h5>
-                        <p class="text-muted font-size-13">10 Unit</p>
+        <!-- Normal -->
+            <?PHP foreach ($menus as $menu) {?>
+                <?PHP
+                $stmt = $pdo->prepare("SELECT * FROM menu_material WHERE menu_id=:menu_id");
+                $stmt->execute([':menu_id' => $menu['id']]);
+                $menu_material = $stmt->fetchAll();
 
-                        <div class="row justify-content-center">
-                            <button class="btn btn-success mx-1" id="sa-warning<?PHP echo $i?>"><i class="mdi mdi-shopping"></i> Serve</button>
+                $countRawMaterial = 0;
 
-                            <script>
-                                $('#sa-warning<?PHP echo $i?>').click(function () {
-                                    Swal.fire({
-                                        title: "Are you sure for this serve?",
-                                        type: "warning",
-                                        showCancelButton: true,
-                                        confirmButtonColor: "#3085d6",
-                                        cancelButtonColor: "#d33",
-                                        confirmButtonText: "Yes"
-                                    }).then(function (result) {
-                                        if (result.value) {
-                                            Swal.fire("Served", "You served this food", "success");
-                                        }
-                                    });
-                                });
-                            </script>
-                        </div>
-                    </div>
-                </div> <!-- end card-->
-            </div> <!-- end col-->
+                foreach ($menu_material as $MM) { 
+                    $stmt = $pdo->prepare("SELECT * FROM material WHERE id=:id");
+                    $stmt->execute([':id' => $MM['material_id']]);
+                    $material = $stmt->fetchAll();
+
+                    if($material[0]["balance"] - $MM["quantity"] < 0){
+                        $countRawMaterial++;
+                    }
+                }
+                ?>
+
+                <?PHP if(count($menu_material) > 0 && $countRawMaterial == 0){?>
+                    <div class="col-xl-3 col-lg-6 text-center">
+                        <div class="card">
+                            <?PHP if($menu['image'] == null){?>
+                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                            <?PHP }else{?>
+                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                            <?PHP }?>
+                            <div class="card-body">
+                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <p class="text-muted font-size-13">10 Unit</p>
+
+                                <div class="row justify-content-center">
+                                    <button class="btn btn-success mx-1" id="cfServe_<?PHP $menu['id']?>"><i class="mdi mdi-shopping"></i> Serve</button>
+
+                                    <script>
+                                        $('#cfServe_<?PHP $menu['id']?>').click(function () {
+                                            Swal.fire({
+                                                title: "Are you sure for this serve?",
+                                                type: "warning",
+                                                showCancelButton: true,
+                                                confirmButtonColor: "#3085d6",
+                                                cancelButtonColor: "#d33",
+                                                confirmButtonText: "Serve"
+                                            }).then(function (result) {
+                                                if (result.value) {
+                                                    $.ajax({
+                                                        url: './databases/order/serve.php?id=<?PHP echo $menu['id']?>',
+                                                        type: "POST",
+                                                        processData: false,
+                                                        contentType: false,
+                                                        success: function(response) {
+                                                            if(response.status === "success") {
+                                                                Swal.fire({
+                                                                    type: 'success',
+                                                                    title: 'Success',
+                                                                    text: response.message,
+                                                                    timer: 2000,
+                                                                    showConfirmButton: false,
+                                                                }).then ( () => {
+                                                                    location.reload();
+                                                                });
+                                                            } else {
+                                                                Swal.fire({
+                                                                    type: 'error',
+                                                                    title: 'Error',
+                                                                    text: response.message,
+                                                                    timer: 2000,
+                                                                    showConfirmButton: false
+                                                                }).then ( () => {
+                                                                    location.reload();
+                                                                });
+                                                            }
+                                                        },
+                                                        error: function() {
+                                                            Swal.fire({
+                                                                type: 'error',
+                                                                title: 'Error',
+                                                                text: 'Unexpected error occurred!',
+                                                                timer: 2000,
+                                                                showConfirmButton: false
+                                                            }).then ( () => {
+                                                                location.reload();
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        });
+                                    </script>
+                                </div>
+                            </div>
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                <?PHP }?>
+            <?PHP }?>
+
+            <!-- Out of Material -->
+            <?PHP foreach ($menus as $menu) {?>
+                <?PHP
+                $stmt = $pdo->prepare("SELECT * FROM menu_material WHERE menu_id=:menu_id");
+                $stmt->execute([':menu_id' => $menu['id']]);
+                $menu_material = $stmt->fetchAll();
+
+                $countRawMaterial = 0;
+
+                foreach ($menu_material as $MM) { 
+                    $stmt = $pdo->prepare("SELECT * FROM material WHERE id=:id");
+                    $stmt->execute([':id' => $MM['material_id']]);
+                    $material = $stmt->fetchAll();
+
+                    if($material[0]["balance"] - $MM["quantity"] < 0){
+                        $countRawMaterial++;
+                    }
+                }
+                ?>
+
+                <?PHP if($countRawMaterial > 0){?>
+                    <div class="col-xl-3 col-lg-6 text-center">
+                        <div class="card">
+                            <?PHP if($menu['image'] == null){?>
+                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                            <?PHP }else{?>
+                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                            <?PHP }?>
+                            <div class="card-body">
+                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <p class="text-danger font-size-13">Out of raw material</p>
+
+                                <div class="row justify-content-center">        
+                                    <button class="btn btn-success mx-1 disabled"><i class="mdi mdi-shopping"></i> Serve</button>
+                                </div>
+                            </div>
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                <?PHP }?>
             <?PHP }?>
         </div>
         <!-- end row-->
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-12">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-end">
@@ -136,7 +234,7 @@
                     </ul>
                 </nav>
             </div>
-        </div>
+        </div> -->
         <!-- end row-->
     </div> <!-- container-fluid -->
 </div>

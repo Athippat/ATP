@@ -1,5 +1,5 @@
 <?PHP
-require '../db-connect.php';
+require '../../db-connect.php';
 
 if(isset($_POST['unit'])) {
     $id = $_POST['id'];

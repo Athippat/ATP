@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
-require '../db-connect.php';
+require '../../db-connect.php';
 
 if (isset($_POST['type']) && isset($_POST['colorChoice'])) {
     $type = $_POST['type'];

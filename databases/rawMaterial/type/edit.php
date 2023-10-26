@@ -1,5 +1,5 @@
 <?PHP
-require '../db-connect.php';
+require '../../db-connect.php';
 
 if(isset($_POST['type']) && isset($_POST['color'])) {
     $id = $_POST['id'];

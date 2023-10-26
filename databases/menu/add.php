@@ -1,26 +1,23 @@
 <?PHP
 header("Content-Type: application/json");
 
-require '../../db-connect.php';
+require '../db-connect.php';
 
 $uploadOk = 1;
 
 $name = $_POST['name'];
-$unit_id = $_POST['unit'];
-$type_id = $_POST['type'];
+$description = (($_POST['description'] == "") ? $description = null : $description = $_POST["description"]);
 
 if($_FILES["fileToUpload"]["error"] != 0){
-    $stmt = $pdo->prepare("INSERT INTO material (name, unit_id, type_id) VALUES (:name, :unit_id, :type_id)");
+    $stmt = $pdo->prepare("INSERT INTO menu (name, description) VALUES (:name, :description)");
     $stmt->execute([
         ':name' => $name,
-        ':unit_id' => $unit_id,
-        ':type_id' => $type_id,
+        ':description' => $description,
     ]);
-    echo json_encode(["status" => "success", "message" => "You created new material already."]);
+    echo json_encode(["status" => "success", "message" => "You created new menu already."]);
     exit;
 }else if($_FILES["fileToUpload"]["error"] == 0){
-
-    $target_dir = "../../../pictures/rawMaterial/";
+    $target_dir = "../../pictures/menu/";
     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
     $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
@@ -42,14 +39,13 @@ if($_FILES["fileToUpload"]["error"] != 0){
     }
 
     if ($uploadOk == 1) {
-        $stmt = $pdo->prepare("INSERT INTO material (name, unit_id, type_id) VALUES (:name, :unit_id, :type_id)");
+        $stmt = $pdo->prepare("INSERT INTO menu (name, description) VALUES (:name, :description)");
         $stmt->execute([
             ':name' => $name,
-            ':unit_id' => $unit_id,
-            ':type_id' => $type_id,
+            ':description' => $description,
         ]);
 
-        $stmt = $pdo->query('SELECT * FROM material ORDER BY id DESC');
+        $stmt = $pdo->query('SELECT * FROM menu ORDER BY id DESC');
         $latestRecord = $stmt->fetch();
 
         $id = $latestRecord['id'];
@@ -57,12 +53,12 @@ if($_FILES["fileToUpload"]["error"] != 0){
         $target_file_new = $target_dir . $id . "." . $imageFileType;
 
         if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file_new)){
-            $stmt = $pdo->prepare("UPDATE material SET image=:image WHERE id=:id");
+            $stmt = $pdo->prepare("UPDATE menu SET image=:image WHERE id=:id");
             $stmt->execute([':image' => $imageFileType, ':id' => $id]);
-            echo json_encode(["status" => "success", "message" => "You created new material already."]);
+            echo json_encode(["status" => "success", "message" => "You created new menu already."]);
             exit;
         }else{
-            $stmt = $pdo->prepare("DELETE FROM material SET WHERE id=:id");
+            $stmt = $pdo->prepare("DELETE FROM menu SET WHERE id=:id");
             $stmt->execute([':id' => $id]);
             echo json_encode(["status" => "error", "message" => "Sorry, there was an error uploading your file."]);
             exit;

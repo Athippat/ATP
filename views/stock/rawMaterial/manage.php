@@ -63,8 +63,8 @@ if($id == null){
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label for="unit">Unit</label>
-                                                                    <select class="form-control mb-3" name="unit">
-                                                                        <option value="0">- Select Unit -</option>
+                                                                    <select class="form-control mb-3" name="unit" required>
+                                                                        <option value="">- Select Unit -</option>
                                                                         <?PHP foreach($units as $unit){?>
                                                                             <option value="<?PHP echo $unit['id']?>"><?PHP echo $unit['unit']?></option>
                                                                         <?PHP }?>
@@ -72,8 +72,8 @@ if($id == null){
                                                                 </div>
                                                                 <div class="form-group">
                                                                     <label for="unit">Type</label>
-                                                                    <select class="form-control mb-3" name="type">
-                                                                        <option value="0">- Select Type -</option>
+                                                                    <select class="form-control mb-3" name="type" required>
+                                                                        <option value="">- Select Type -</option>
                                                                         <?PHP foreach($types as $type){?>
                                                                             <option value="<?PHP echo $type['id']?>"><?PHP echo $type['type']?></option>
                                                                         <?PHP }?>
@@ -87,8 +87,52 @@ if($id == null){
                                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                                                         <button type="submit" class="btn btn-success">Create</button>
                                                     </div>
-                                                </div>
-                                            </form>
+                                                </form>
+
+                                                <script>
+                                                    $("#rawMaterialForm").on("submit", function(e) {
+                                                        e.preventDefault();
+
+                                                        $.ajax({
+                                                            url: $(this).attr("action"),
+                                                            type: "POST",
+                                                            data: new FormData(this),
+                                                            processData: false,
+                                                            contentType: false,
+                                                            success: function(response) {
+                                                                if(response.status === "success") {
+                                                                    Swal.fire({
+                                                                        type: 'success',
+                                                                        title: 'Success',
+                                                                        text: response.message,
+                                                                        timer: 2000,
+                                                                        showConfirmButton: false,
+                                                                    }).then ( () => {
+                                                                        location.reload();
+                                                                    });
+                                                                } else {
+                                                                    Swal.fire({
+                                                                        type: 'error',
+                                                                        title: 'Error',
+                                                                        text: response.message,
+                                                                        timer: 2000,
+                                                                        showConfirmButton: false
+                                                                    });
+                                                                }
+                                                            },
+                                                            error: function() {
+                                                                Swal.fire({
+                                                                    type: 'error',
+                                                                    title: 'Error',
+                                                                    text: 'Unexpected error occurred!',
+                                                                    timer: 2000,
+                                                                    showConfirmButton: false
+                                                                });
+                                                            }
+                                                        });
+                                                    });
+                                                </script>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -101,12 +145,12 @@ if($id == null){
         <!-- end row --> 
 
         <?PHP
-        $stmt = $pdo->query('SELECT * FROM type');
-        $types = $stmt->fetchAll();
+        $stmt = $pdo->query('SELECT * FROM material');
+        $materials = $stmt->fetchAll();
         ?>
 
         <div class="row">
-            <div class="col-xl-3 col-lg-6 text-center">
+            <!-- <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=1">
                     <div class="card bg-danger">
                         <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
@@ -117,9 +161,9 @@ if($id == null){
                                 <small class="text-white">(Recommend 400 KG)</small>
                             </p>
                         </div>
-                    </div> <!-- end card-->
+                    </div>
                 </a>
-            </div> <!-- end col-->
+            </div>
             <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=2">
                     <div class="card bg-danger">
@@ -131,9 +175,9 @@ if($id == null){
                                 <small class="text-white">(Recommend 800 KG)</small>
                             </p>
                         </div>
-                    </div> <!-- end card-->
+                    </div>
                 </a>
-            </div> <!-- end col-->
+            </div>
             <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=3">
                     <div class="card bg-warning">
@@ -145,9 +189,9 @@ if($id == null){
                                 <small class="text-white">(Recommend 10 KG)</small>
                             </p>
                         </div>
-                    </div> <!-- end card-->
+                    </div>
                 </a>
-            </div> <!-- end col-->
+            </div>
             <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=4">
                     <div class="card bg-warning">
@@ -159,17 +203,26 @@ if($id == null){
                                 <small class="text-white">(Recommend 200 Bottle)</small>
                             </p>
                         </div>
-                    </div> <!-- end card-->
+                    </div>
                 </a>
-            </div> <!-- end col-->
-            <?PHP for ($i=5; $i <= 12; $i++) {?>
+            </div> -->
+            <?PHP foreach ($materials as $material) {?>
+            <?PHP
+            $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
+            $stmt->execute([':id' => $material['unit_id']]);
+            $units = $stmt->fetchAll();
+            ?>
             <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=<?PHP echo $i?>">
+                <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
                     <div class="card">
-                        <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
+                        <?PHP if($material['image'] == null){?>
+                            <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
+                        <?PHP }else{?>
+                            <img class="card-img-top img-fluid" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
+                        <?PHP }?>
                         <div class="card-body">
-                            <h5 class="mb-1">Pork</h5>
-                            <p class="text-muted font-size-13">50 KG</p>
+                            <h5 class="mb-1"><?PHP echo $material['name']?></h5>
+                            <p class="text-muted font-size-13"><?PHP echo $material['balance'] . " " . $units[0]['unit']?></p>
                         </div>
                     </div> <!-- end card-->
                 </a>
@@ -178,7 +231,7 @@ if($id == null){
         </div>
         <!-- end row-->
 
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-12">
                 <nav aria-label="Page navigation example">
                     <ul class="pagination justify-content-end">
@@ -194,7 +247,7 @@ if($id == null){
                     </ul>
                 </nav>
             </div>
-        </div>
+        </div> -->
         <!-- end row-->
     </div> <!-- container-fluid -->
 </div>
@@ -202,35 +255,101 @@ if($id == null){
 
 
 <?PHP }else{?>
+<?PHP
+$stmt = $pdo->prepare("SELECT * FROM material WHERE id=:id");
+$stmt->execute([':id' => $_GET['id']]);
+$material = $stmt->fetchAll();
+
+$stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
+$stmt->execute([':id' => $material[0]['unit_id']]);
+$unit = $stmt->fetchAll();
+?>
+
 <div class="page-content">
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-xl-6">
-                <input type="file" class="dropify" data-height="250" data-default-file="assets/images/team/team-1.jpg" >
+                <input type="file" class="dropify" data-height="250"
+                    <?PHP if($material[0]['image'] != null){?>
+                        data-default-file="./pictures/rawMaterial/<?PHP echo $material[0]['id'] . '.' . $material[0]['image']?>"
+                    <?PHP }?>
+                >
             </div> <!-- end col -->
             <div class="col-xl-6">
-                <div class="form-group">
-                    <label>Quantity</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" placeholder="Enter your Quantity">
-                        <div class="input-group-append">
-                            <button class="btn btn-dark" type="button">KG</button>
+                <form id="quantityForm" action="./databases/rawMaterial/manage/addQuantity.php?material_id=<?PHP echo $material[0]['id']?>" method="POST">
+                    <div class="form-group">
+                        <label>Quantity</label>
+                        <div class="input-group">
+                            <input type="number" step="any" name="quantity" class="form-control" placeholder="Enter your Quantity" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" type="button"><?PHP echo $unit[0]['unit']?></button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <label>Price / Unit</label>
-                    <div class="input-group">
-                        <input type="number" class="form-control" placeholder="Enter your Price / Unit">
-                        <div class="input-group-append">
-                            <button class="btn btn-dark" type="button">Baht / KG</button>
+                    <div class="form-group">
+                        <label>Price / Unit</label>
+                        <div class="input-group">
+                            <input type="number" step="any" name="price" class="form-control" placeholder="Enter your Price / Unit" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-dark" type="button">Baht / <?PHP echo $unit[0]['unit']?></button>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <button class="btn btn-success">Add</button>
+                    <button type="submit" class="btn btn-success">Add</button>
+                </form>
+
+                <script>
+                    $("#quantityForm").on("submit", function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr("action"),
+                            type: "POST",
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.status === "success") {
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Success',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    }).then ( () => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error',
+                                    text: 'Unexpected error occurred!',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    });
+                </script>
             </div>
         </div>
+
+        <?PHP
+        $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+        $stmt->execute([':material_id' => $_GET["id"]]);
+        $material_quantity = $stmt->fetchAll();
+        ?>
 
         <div class="row">
             <div class="col-12">
@@ -248,16 +367,21 @@ if($id == null){
                             </thead>
                         
                             <tbody>
+                                <?PHP foreach($material_quantity as $MQ){?>
                                 <tr>
-                                    <td>20 KG</td>
-                                    <td>4.6 KG</td>
-                                    <td>160 Baht</td>
-                                    <td>18 October 2023 03:10:58</td>
+                                    <td><?PHP echo $MQ['quantity'] . " " . $unit[0]['unit']?></td>
+                                    <td><?PHP echo $MQ['balance'] . " " . $unit[0]['unit']?></td>
+                                    <td><?PHP echo $MQ['price']?> Baht</td>
+                                    <td><?PHP echo changeDateTime($MQ['regDate']);?></td>
                                     <td>
-                                        <button class="btn btn-warning text-white"><i class="mdi mdi-pencil"></i></button>
-                                        <button class="btn btn-danger"><i class="mdi mdi-trash-can"></i></button>
+                                        <?PHP if($MQ["quantity"] == $MQ["balance"]){?>
+                                            <button class="btn btn-danger"><i class="mdi mdi-trash-can"></i></button>
+                                        <?PHP }else{?>
+                                            <button class="btn btn-warning text-white">Leftovers</button>
+                                        <?PHP }?>
                                     </td>
                                 </tr>
+                                <?PHP }?>
                             </tbody>
                         </table>
 

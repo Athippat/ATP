@@ -3,6 +3,12 @@ session_start();
 
 require "./databases/db-connect.php";
 
+function changeDateTime($inputDate){
+    $date = new DateTime($inputDate);
+    $formattedDate = $date->format('d F Y H:i:s');
+    return $formattedDate;
+}
+
 $page = (isset($_GET['page']) ? $page = $_GET['page'] : $_GET = "home");
 
 if(!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true){

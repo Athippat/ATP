@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json");
 
-require '../db-connect.php';
+require '../../db-connect.php';
 
 if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST['unit'])) {
     // Sanitize your data
