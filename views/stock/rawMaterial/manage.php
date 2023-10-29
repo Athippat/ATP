@@ -211,6 +211,16 @@ if($id == null){
             $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
             $stmt->execute([':id' => $material['unit_id']]);
             $units = $stmt->fetchAll();
+
+            $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+            $stmt->execute([':material_id' => $material['id']]);
+            $material_quantity = $stmt->fetchAll();
+
+            $balance = 0;
+
+            foreach ($material_quantity as $mq){
+                $balance += $mq["balance"];
+            }
             ?>
             <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
@@ -222,7 +232,7 @@ if($id == null){
                         <?PHP }?>
                         <div class="card-body">
                             <h5 class="mb-1"><?PHP echo $material['name']?></h5>
-                            <p class="text-muted font-size-13"><?PHP echo $material['balance'] . " " . $units[0]['unit']?></p>
+                            <p class="text-muted font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?></p>
                         </div>
                     </div> <!-- end card-->
                 </a>
@@ -358,6 +368,7 @@ $unit = $stmt->fetchAll();
                         <table id="basic-datatable" class="table dt-responsive nowrap">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Quantity</th>
                                     <th>Balance</th>
                                     <th>Price/Unit</th>
@@ -367,8 +378,10 @@ $unit = $stmt->fetchAll();
                             </thead>
                         
                             <tbody>
+                                <?PHP $i = 1; ?>
                                 <?PHP foreach($material_quantity as $MQ){?>
                                 <tr>
+                                    <td><?PHP echo $i?></td>
                                     <td><?PHP echo $MQ['quantity'] . " " . $unit[0]['unit']?></td>
                                     <td><?PHP echo $MQ['balance'] . " " . $unit[0]['unit']?></td>
                                     <td><?PHP echo $MQ['price']?> Baht</td>
@@ -381,7 +394,7 @@ $unit = $stmt->fetchAll();
                                         <?PHP }?>
                                     </td>
                                 </tr>
-                                <?PHP }?>
+                                <?PHP $i++; }?>
                             </tbody>
                         </table>
 

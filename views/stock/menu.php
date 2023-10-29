@@ -161,7 +161,17 @@ if($id == null){
                     $stmt->execute([':id' => $MM['material_id']]);
                     $material = $stmt->fetchAll();
 
-                    if($material[0]["balance"] - $MM["quantity"] < 0){
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material[0]['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach($material_quantity as $mq){
+                        $balance += $mq["balance"];
+                    }
+
+                    if($balance - $MM["quantity"] < 0){
                         $countRawMaterial++;
                     }
                 }
@@ -196,6 +206,11 @@ if($id == null){
                 $stmt->execute([':menu_id' => $menu['id']]);
                 $menu_material = $stmt->fetchAll();
 
+                $i = 0;
+
+                $numOfUnit = 0;
+
+                // For Check Balance
                 $countRawMaterial = 0;
 
                 foreach ($menu_material as $MM) { 
@@ -203,9 +218,29 @@ if($id == null){
                     $stmt->execute([':id' => $MM['material_id']]);
                     $material = $stmt->fetchAll();
 
-                    if($material[0]["balance"] - $MM["quantity"] < 0){
-                        $countRawMaterial++;
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material[0]['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach($material_quantity as $mq){
+                        $balance += $mq["balance"];
                     }
+
+                    if($balance - $MM["quantity"] < 0){
+                        $countRawMaterial++;
+
+                    }
+
+                    if($i == 0){
+                        $numOfUnit = $balance / $MM["quantity"];
+                    }else{
+                        if(($balance / $MM["quantity"]) < $numOfUnit){
+                            $numOfUnit = $balance / $MM["quantity"];
+                        }
+                    }
+                    $i++;
                 }
                 ?>
 
@@ -219,7 +254,7 @@ if($id == null){
                             <?PHP }?>
                             <div class="card-body">
                                 <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
-                                <p class="text-muted font-size-13">10 Unit</p>
+                                <p class="text-muted font-size-13"><?PHP echo $numOfUnit?> Unit</p>
 
                                 <div class="row justify-content-center">
                                 <a href="./index.php?page=menu&id=<?PHP echo $menu['id']?>" class="btn btn-warning text-white mx-1"><i class="mdi mdi-pencil"></i></a>
@@ -456,6 +491,16 @@ $menu = $stmt->fetchAll();
                                 $stmt->execute([":id" => $menuMaterial['material_id']]);
                                 $material = $stmt->fetchAll();
 
+                                $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                                $stmt->execute([':material_id' => $material[0]['id']]);
+                                $material_quantity = $stmt->fetchAll();
+
+                                $balance = 0;
+
+                                foreach ($material_quantity as $mq){
+                                    $balance += $mq["balance"];
+                                }
+
                                 $stmt = $pdo->prepare('SELECT * FROM unit WHERE id=:id');
                                 $stmt->execute([":id" => $material[0]['unit_id']]);
                                 $unit = $stmt->fetchAll();
@@ -470,10 +515,10 @@ $menu = $stmt->fetchAll();
                                     </td>
                                     <td><?PHP echo $material[0]['name']?></td>
                                     <td><?PHP echo $menuMaterial['quantity'] . " " . $unit[0]['unit']?></td>
-                                    <td><?PHP echo $material[0]['balance'] . " " . $unit[0]['unit']?></td>
-                                    <?PHP if($material[0]['balance']-$menuMaterial['quantity'] > 0){ ?>
+                                    <td><?PHP echo $balance . " " . $unit[0]['unit']?></td>
+                                    <?PHP if($balance-$menuMaterial['quantity'] >= 0){ ?>
                                         <td class="text-success">Enough</td>
-                                    <?PHP }else if($material[0]['balance']-$menuMaterial['quantity'] < 0){ ?>
+                                    <?PHP }else if($balance-$menuMaterial['quantity'] < 0){ ?>
                                         <td class="text-danger">Not Enough</td>
                                     <?PHP } ?>
                                     <td>

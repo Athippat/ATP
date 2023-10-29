@@ -85,6 +85,10 @@
                 $stmt->execute([':menu_id' => $menu['id']]);
                 $menu_material = $stmt->fetchAll();
 
+                $i = 0;
+
+                $numOfUnit = 0;
+
                 $countRawMaterial = 0;
 
                 foreach ($menu_material as $MM) { 
@@ -92,9 +96,28 @@
                     $stmt->execute([':id' => $MM['material_id']]);
                     $material = $stmt->fetchAll();
 
-                    if($material[0]["balance"] - $MM["quantity"] < 0){
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material[0]['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach($material_quantity as $mq){
+                        $balance += $mq["balance"];
+                    }
+
+                    if($balance - $MM["quantity"] < 0){
                         $countRawMaterial++;
                     }
+
+                    if($i == 0){
+                        $numOfUnit = $balance / $MM["quantity"];
+                    }else{
+                        if(($balance / $MM["quantity"]) < $numOfUnit){
+                            $numOfUnit = $balance / $MM["quantity"];
+                        }
+                    }
+                    $i++;
                 }
                 ?>
 
@@ -108,13 +131,13 @@
                             <?PHP }?>
                             <div class="card-body">
                                 <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
-                                <p class="text-muted font-size-13">10 Unit</p>
+                                <p class="text-muted font-size-13"><?PHP echo $numOfUnit;?> Unit</p>
 
                                 <div class="row justify-content-center">
-                                    <button class="btn btn-success mx-1" id="cfServe_<?PHP $menu['id']?>"><i class="mdi mdi-shopping"></i> Serve</button>
+                                    <button class="btn btn-success mx-1" id="cfServe_<?PHP echo $menu['id']?>"><i class="mdi mdi-shopping"></i> Serve</button>
 
                                     <script>
-                                        $('#cfServe_<?PHP $menu['id']?>').click(function () {
+                                        $('#cfServe_<?PHP echo $menu['id']?>').click(function () {
                                             Swal.fire({
                                                 title: "Are you sure for this serve?",
                                                 type: "warning",
@@ -189,7 +212,17 @@
                     $stmt->execute([':id' => $MM['material_id']]);
                     $material = $stmt->fetchAll();
 
-                    if($material[0]["balance"] - $MM["quantity"] < 0){
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material[0]['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach($material_quantity as $mq){
+                        $balance += $mq["balance"];
+                    }
+
+                    if($balance - $MM["quantity"] < 0){
                         $countRawMaterial++;
                     }
                 }

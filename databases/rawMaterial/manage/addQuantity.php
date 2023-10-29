@@ -15,15 +15,6 @@ $stmt->execute([
     ':balance' => $quantity,
 ]);
 
-$stmt = $pdo->prepare("SELECT * FROM material WHERE id=:id");
-$stmt->execute([':id' => $material_id]);
-$material = $stmt->fetchAll();
-
-$newBalance = $material[0]["balance"] + $quantity;
-
-$stmt = $pdo->prepare("UPDATE material SET balance=:balance WHERE id=:id");
-$stmt->execute([':balance' => $newBalance, ':id' => $material_id]);
-
 echo json_encode(["status" => "success", "message" => ""]);
 
 exit;
