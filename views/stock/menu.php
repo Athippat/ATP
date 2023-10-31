@@ -254,7 +254,7 @@ if($id == null){
                             <?PHP }?>
                             <div class="card-body">
                                 <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
-                                <p class="text-muted font-size-13"><?PHP echo $numOfUnit?> Unit</p>
+                                <p class="text-muted font-size-13"><?PHP echo floor($numOfUnit)?> Unit</p>
 
                                 <div class="row justify-content-center">
                                 <a href="./index.php?page=menu&id=<?PHP echo $menu['id']?>" class="btn btn-warning text-white mx-1"><i class="mdi mdi-pencil"></i></a>

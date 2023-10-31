@@ -1,6 +1,8 @@
 <?PHP
 header("Content-Type: application/json");
 
+session_start();
+
 require '../db-connect.php';
 
 $menu_id = $_GET["id"];
@@ -24,8 +26,6 @@ try{
         $material_quantity = $stmt->fetchAll();
 
         // print_r($material_quantity);
-
-        // echo $mm["quantity"];
 
         $i = 0;
 
@@ -55,6 +55,23 @@ try{
             }
         }
     }
+
+    // -----------------------------
+    // Add To History
+    // -----------------------------
+
+    $stmt = $pdo->prepare("SELECT * FROM menu WHERE id=:id");
+    $stmt->execute([':id' => $menu_id]);
+    $menus = $stmt->fetchAll();
+
+    $stmt = $pdo->prepare("INSERT INTO history (menu_id, menu_name, menu_image, serveBy) VALUES (:menu_id, :menu_name, :menu_image, :serveBy)");
+    $stmt->execute([
+        ':menu_id' => $menu_id,
+        ':menu_name' => $menus[0]["name"],
+        ':menu_image' => $menus[0]["image"],
+        ':serveBy' => $_SESSION["firstname"] . " " . $_SESSION['lastname'] . " (" . $_SESSION['nickname'] . ")",
+    ]);
+
     echo json_encode(["status" => "success", "message" => "Served."]);
 }catch (PDOException $e) {
     echo json_encode(["status" => "error", "message" => "Can't Serve."]);

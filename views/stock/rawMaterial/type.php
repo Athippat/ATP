@@ -232,7 +232,7 @@
 </script>
 
 <?PHP foreach ($types as $type) {?>
-    <script>
+<script>
     $("#deleteTypeForm_<?PHP echo $type['id']?>").on('submit', function(e) {
         e.preventDefault();
 

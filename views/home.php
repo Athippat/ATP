@@ -2,20 +2,32 @@
     <div class="container-fluid">
 
         <div class="row">
+            <div class="col-md-4 col-xl-7"></div>
+            <div class="col-md-6 col-xl-3">
+                <div class="form-group">
+                    <input type="number" id="sale" name="sale" class="form-control" placeholder="Enter your sales">
+                </div>
+            </div>
+            <div class="col-md-2 col-xl-2">
+                <button class="btn btn-success w-100">Enter</button>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-lg-6 col-xl-3">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Cost per Unit</h6>
-                                <span class="h3 mb-0"> $85.50 </span>
+                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Cost</h6>
+                                <span class="h3 mb-0 text-warning"> $85.50 </span>
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+7.5%</span>
-                            </div>
+                            </div> -->
                         </div> <!-- end row -->
 
-                        <div id="sparkline1" class="mt-3"></div>
+                        <!-- <div id="sparkline1" class="mt-3"></div> -->
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
@@ -25,15 +37,15 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Market Revenue</h6>
-                                <span class="h3 mb-0"> $12,548.25 </span>
+                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Leftover</h6>
+                                <span class="h3 mb-0 text-danger"> $12,548.25 </span>
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <span class="badge badge-soft-danger">-24.5%</span>
-                            </div>
+                            </div> -->
                         </div> <!-- end row -->
 
-                        <div id="sparkline2" class="mt-3"></div>
+                        <!-- <div id="sparkline2" class="mt-3"></div> -->
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
@@ -43,15 +55,15 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Expenses</h6>
-                                <span class="h3 mb-0"> $8,451.28 </span>
+                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Salary</h6>
+                                <span class="h3 mb-0 text-danger"> ฿ --- </span>
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+3.5%</span>
-                            </div>
+                            </div> -->
                         </div> <!-- end row -->
 
-                        <div id="sparkline3" class="mt-3"></div>
+                        <!-- <div id="sparkline3" class="mt-3"></div> -->
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
@@ -61,15 +73,15 @@
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Daily Visits</h6>
-                                <span class="h3 mb-0"> 1,12,584 </span>
+                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Profit</h6>
+                                <span class="h3 mb-0 text-success"> ฿112,584 </span>
                             </div>
-                            <div class="col-auto">
+                            <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+53.5%</span>
-                            </div>
+                            </div> -->
                         </div> <!-- end row -->
 
-                        <div id="sparkline4" class="mt-3"></div>
+                        <!-- <div id="sparkline4" class="mt-3"></div> -->
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
@@ -77,7 +89,7 @@
         <!-- end row-->
 
         <div class="row">
-            <div class="col-xl-4 col-lg-5">
+            <!-- <div class="col-xl-4 col-lg-5">
                 <div class="card">
                     <div class="card-body">
         
@@ -86,12 +98,12 @@
 
                         <div id="morris-donut-example" class="morris-chart"></div>
         
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
+                    </div>
+                </div>
 
-            </div> <!-- end col-->
+            </div> -->
 
-            <div class="col-xl-8 col-lg-7">
+            <!-- <div class="col-xl-8 col-lg-7">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Sales Analytics</h4>
@@ -101,121 +113,108 @@
 
                     </div>
                 </div>
-            </div> <!-- end col-->
+            </div> -->
         </div>
         <!-- end row-->
 
+        <?PHP
+        $stmt = $pdo->query('SELECT * FROM menu');
+        $menus = $stmt->fetchAll();
+        ?>
+
         <div class="row">
-            <div class="col-xl-6">
+            <!-- Out of Material -->
+            <?PHP foreach ($menus as $menu) {?>
+                <?PHP
+                $stmt = $pdo->prepare("SELECT * FROM menu_material WHERE menu_id=:menu_id");
+                $stmt->execute([':menu_id' => $menu['id']]);
+                $menu_material = $stmt->fetchAll();
+
+                $countRawMaterial = 0;
+
+                foreach ($menu_material as $MM) { 
+                    $stmt = $pdo->prepare("SELECT * FROM material WHERE id=:id");
+                    $stmt->execute([':id' => $MM['material_id']]);
+                    $material = $stmt->fetchAll();
+
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material[0]['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach($material_quantity as $mq){
+                        $balance += $mq["balance"];
+                    }
+
+                    if($balance - $MM["quantity"] < 0){
+                        $countRawMaterial++;
+                    }
+                }
+                ?>
+
+                <?PHP if($countRawMaterial > 0){?>
+                    <div class="col-xl-3 col-lg-6 text-center">
+                        <div class="card">
+                            <?PHP if($menu['image'] == null){?>
+                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                            <?PHP }else{?>
+                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                            <?PHP }?>
+                            <div class="card-body">
+                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <p class="text-danger font-size-13">Out of raw material</p>
+
+                                <div class="row justify-content-center">
+                                    <a href="./index.php?page=menu&id=<?PHP echo $menu['id']?>" class="btn btn-warning text-white mx-1"><i class="mdi mdi-pencil"></i></a>
+                                    <a href="./index.php?page=rawMaterial_manage" class="btn btn-success"><i class="mdi mdi-silverware-variant"></i> Add Raw Material</a>
+                                </div>
+                            </div>
+                        </div> <!-- end card-->
+                    </div> <!-- end col-->
+                <?PHP }?>
+            <?PHP }?>
+        </div>
+
+        <?PHP
+        $stmt = $pdo->query('SELECT * FROM material_leftover');
+        $material_leftover = $stmt->fetchAll();
+        ?>
+
+        <div class="row">
+            <div class="col-xl-8">
                 <div class="card">
                     <div class="card-body">
         
-                        <h4 class="card-title">Recent Customers</h4>
-                        <p class="card-subtitle mb-4">Transaction period from 21 July to 25 Aug</p>
+                        <h4 class="card-title">Raw Material Leftover</h4>
                         
                         <div class="table-responsive">
-                            <table class="table table-centered table-striped table-nowrap">
+                            <table id="basic-datatable" class="table dt-responsive table-centered table-striped table-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>Customer</th>
-                                        <th>Phone</th>
-                                        <th>Email</th>
-                                        <th>Location</th>
-                                        <th>Create Date</th>
+                                        <th>Raw Material</th>
+                                        <th>Quantity</th>
+                                        <th>Price / Unit</th>
+                                        <th>Date</th>
+                                        <th>Leftover By</th>
                                     </tr>
                                 </thead>
+
                                 <tbody>
+                                    <?PHP foreach ($material_leftover as $ML){?>
                                     <tr>
                                         <td class="table-user">
-                                            <img src="assets/images/users/avatar-4.jpg" alt="table-user" class="mr-2 avatar-xs rounded-circle">
-                                            <a href="javascript:void(0);" class="text-body font-weight-semibold">Paul J. Friend</a>
+                                            <img src="./pictures/rawMaterial/<?PHP echo $ML['material_id'] . '.' . $ML['material_image']?>" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                            <a href="javascript:void(0);" class="text-body font-weight-semibold"><?PHP echo $ML['name']?></a>
                                         </td>
+                                        <td><?PHP echo $ML["quantity"] . " " . $ML["unit"]?></td>
+                                        <td>฿ <?PHP echo $ML["price"]?></td>
                                         <td>
-                                            937-330-1634
+                                            <?PHP echo changeDateTime($ML["regDate"])?>
                                         </td>
-                                        <td>
-                                            pauljfrnd@jourrapide.com
-                                        </td>
-                                        <td>
-                                            New York
-                                        </td>
-                                        <td>
-                                            07/07/2018
-                                        </td>
+                                        <td><?PHP echo $ML["leftoverBy"]?></td>
                                     </tr>
-                                    
-                                    <tr>
-                                        <td class="table-user">
-                                            <img src="assets/images/users/avatar-3.jpg" alt="table-user" class="mr-2 avatar-xs rounded-circle">
-                                            <a href="javascript:void(0);" class="text-body font-weight-semibold">Bryan J. Luellen</a>
-                                        </td>
-                                        <td>
-                                            215-302-3376
-                                        </td>
-                                        <td>
-                                            bryuellen@dayrep.com
-                                        </td>
-                                        <td>
-                                            New York
-                                        </td>
-                                        <td>
-                                            09/12/2018
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="table-user">
-                                            <img src="assets/images/users/avatar-8.jpg" alt="table-user" class="mr-2 avatar-xs rounded-circle">
-                                            <a href="javascript:void(0);" class="text-body font-weight-semibold">Kathryn S. Collier</a>
-                                        </td>
-                                        <td>
-                                            828-216-2190
-                                        </td>
-                                        <td>
-                                            collier@jourrapide.com
-                                        </td>
-                                        <td>
-                                            Canada
-                                        </td>
-                                        <td>
-                                            06/30/2018
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="table-user">
-                                            <img src="assets/images/users/avatar-1.jpg" alt="table-user" class="mr-2 avatar-xs rounded-circle">
-                                            <a href="javascript:void(0);" class="text-body font-weight-semibold">Timothy Kauper</a>
-                                        </td>
-                                        <td>
-                                            (216) 75 612 706
-                                        </td>
-                                        <td>
-                                            thykauper@rhyta.com
-                                        </td>
-                                        <td>
-                                            Denmark
-                                        </td>
-                                        <td>
-                                            09/08/2018
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="table-user">
-                                            <img src="assets/images/users/avatar-5.jpg" alt="table-user" class="mr-2 avatar-xs rounded-circle">
-                                            <a href="javascript:void(0);" class="text-body font-weight-semibold">Zara Raws</a>
-                                        </td>
-                                        <td>
-                                            (02) 75 150 655
-                                        </td>
-                                        <td>
-                                            austin@dayrep.com
-                                        </td>
-                                        <td>
-                                            Germany
-                                        </td>
-                                        <td>
-                                            07/15/2018
-                                        </td>
-                                    </tr>
+                                    <?PHP }?>
                                     
                                 </tbody>
                             </table>
@@ -225,108 +224,103 @@
                 </div> <!-- end card-->
             </div> <!-- end col -->
             
-            <div class="col-xl-6">
+            <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body">
         
-                        <h4 class="card-title">Account Transactions</h4>
-                        <p class="card-subtitle mb-4">Transaction period from 21 July to 25 Aug</p>
+                        <h4 class="card-title">Employee Check In</h4>
+                        <!-- <p class="card-subtitle mb-4">Transaction period from 21 July to 25 Aug</p> -->
                         
                         <div class="table-responsive">
                             <table class="table table-borderless table-hover table-centered table-nowrap mb-0">
                                 <tbody>
                                     <tr>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">4257 **** **** 7852</h5>
-                                            <span class="text-muted font-size-12">11 April 2019</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal text-danger">Check-Out</h5>
+                                            <span class="text-muted font-size-12">31 October 2021 21:01:52</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">$79.49</h5>
-                                            <span class="text-muted font-size-12">Amount</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">
+                                                <img src="https://fakeimg.pl/512x512" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                                Athip
+                                            </h5>
+                                            <span class="text-muted font-size-12">Athippat Chirawongnathiporn</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-17 mb-1 font-weight-normal"><i class="fab fa-cc-visa"></i></h5>
-                                            <span class="text-muted font-size-12">Card</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">Employee</h5>
+                                            <span class="text-muted font-size-12">Permission</span>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                    <td>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal text-danger">Check-Out</h5>
+                                            <span class="text-muted font-size-12">31 October 2021 20:59:38</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">Helen Warren</h5>
-                                            <span class="text-muted font-size-12">Pay</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">
+                                                <img src="https://fakeimg.pl/512x512" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                                Plume
+                                            </h5>
+                                            <span class="text-muted font-size-12">Pongsakorn Sommapee</span>
+                                        </td>
+                                        <td>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">Employee</h5>
+                                            <span class="text-muted font-size-12">Permission</span>
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">4265 **** **** 0025</h5>
-                                            <span class="text-muted font-size-12">28 Jan 2019</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal text-success">Check-In</h5>
+                                            <span class="text-muted font-size-12">31 October 2021 09:13:52</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">$1254.00</h5>
-                                            <span class="text-muted font-size-12">Amount</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">
+                                                <img src="https://fakeimg.pl/512x512" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                                Aomsin
+                                            </h5>
+                                            <span class="text-muted font-size-12">Suwijak Tepasukalak</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-17 mb-1 font-weight-normal"><i class="fab fa-cc-stripe"></i></h5>
-                                            <span class="text-muted font-size-12">Card</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">Kayla Lambie</h5>
-                                            <span class="text-muted font-size-12">Pay</span>
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">5570 **** **** 8547</h5>
-                                            <span class="text-muted font-size-12">08 Dec 2018</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">$784.25</h5>
-                                            <span class="text-muted font-size-12">Amount</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-17 mb-1 font-weight-normal"><i class="fab fa-cc-amazon-pay"></i></h5>
-                                            <span class="text-muted font-size-12">Card</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">Hugo Lavarack</h5>
-                                            <span class="text-muted font-size-12">Pay</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">Employee</h5>
+                                            <span class="text-muted font-size-12">Permission</span>
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">7845 **** **** 5214</h5>
-                                            <span class="text-muted font-size-12">03 Dec 2018</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal text-success">Check-In</h5>
+                                            <span class="text-muted font-size-12">31 October 2021 09:13:52</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">$485.24</h5>
-                                            <span class="text-muted font-size-12">Amount</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">
+                                                <img src="https://fakeimg.pl/512x512" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                                Plume
+                                            </h5>
+                                            <span class="text-muted font-size-12">Pongsakorn Sommapee</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-17 mb-1 font-weight-normal"><i class="fab fa-cc-visa"></i></h5>
-                                            <span class="text-muted font-size-12">Card</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">Amber Scurry</h5>
-                                            <span class="text-muted font-size-12">Pay</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">Employee</h5>
+                                            <span class="text-muted font-size-12">Permission</span>
                                         </td>
                                     </tr>
 
                                     <tr>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">4257 **** **** 7852</h5>
-                                            <span class="text-muted font-size-12">12 Nov 2018</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal text-success">Check-In</h5>
+                                            <span class="text-muted font-size-12">31 October 2021 09:13:52</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">$8964.04</h5>
-                                            <span class="text-muted font-size-12">Amount</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">
+                                                <img src="https://fakeimg.pl/512x512" alt="table-user" class="mr-2 avatar-xs rounded-circle">
+                                                Athip
+                                            </h5>
+                                            <span class="text-muted font-size-12">Athippat Chirawongnathiporn</span>
                                         </td>
                                         <td>
-                                            <h5 class="font-size-17 mb-1 font-weight-normal"><i class="fab fa-cc-visa"></i></h5>
-                                            <span class="text-muted font-size-12">Card</span>
-                                        </td>
-                                        <td>
-                                            <h5 class="font-size-15 mb-1 font-weight-normal">Caitlyn Gibney</h5>
-                                            <span class="text-muted font-size-12">Pay</span>
+                                            <h5 class="font-size-15 mb-1 font-weight-normal">Employee</h5>
+                                            <span class="text-muted font-size-12">Permission</span>
                                         </td>
                                     </tr>
 

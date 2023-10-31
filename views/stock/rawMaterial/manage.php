@@ -356,10 +356,12 @@ $unit = $stmt->fetchAll();
         </div>
 
         <?PHP
-        $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+        $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id ORDER BY id DESC");
         $stmt->execute([':material_id' => $_GET["id"]]);
         $material_quantity = $stmt->fetchAll();
         ?>
+
+        <h1>Stock</h1>
 
         <div class="row">
             <div class="col-12">
@@ -388,11 +390,139 @@ $unit = $stmt->fetchAll();
                                     <td><?PHP echo changeDateTime($MQ['regDate']);?></td>
                                     <td>
                                         <?PHP if($MQ["quantity"] == $MQ["balance"]){?>
-                                            <button class="btn btn-danger"><i class="mdi mdi-trash-can"></i></button>
-                                        <?PHP }else{?>
-                                            <button class="btn btn-warning text-white">Leftovers</button>
+                                            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteStock_<?PHP echo $MQ["id"]?>"><i class="mdi mdi-trash-can"></i></button>
+                                        <?PHP }else if($MQ["balance"] != 0){?>
+                                            <button class="btn btn-warning text-white" data-toggle="modal" data-target="#leftoverStock_<?PHP echo $MQ["id"]?>">Leftovers</button>
+                                        <?PHP }else{ ?>
+                                            <button class="btn btn-success" disabled>Sold Out</button>
                                         <?PHP }?>
                                     </td>
+
+                                    <!-- Modal Delete -->
+                                    <div class="modal fade text-left" id="deleteStock_<?PHP echo $MQ['id']?>" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-body text-center">
+                                                        Do your really want to delete
+                                                        <br><br>
+                                                        <h2 class="text-warning"><?PHP echo $material[0]['name'] . " #" . $i;?></h2>
+                                                    </div>
+                                                    <form id="deleteStockForm_<?PHP echo $MQ['id']?>" action="./databases/rawMaterial/manage/deleteStock.php?id=<?PHP echo $MQ['id']?>" method="post">
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        $("#deleteStockForm_<?PHP echo $MQ['id']?>").on('submit', function(e) {
+                                            e.preventDefault();
+
+                                            $.ajax({
+                                                url: $(this).attr("action"),
+                                                type: "POST",
+                                                data: new FormData(this),
+                                                processData: false,
+                                                contentType: false,
+                                                success: function(response) {
+                                                    if(response.status === "success") {
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: 'Success',
+                                                            text: response.message,
+                                                            timer: 2000,
+                                                            showConfirmButton: false,
+                                                        }).then ( () => {
+                                                            location.reload();
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            type: 'error',
+                                                            title: 'Error',
+                                                            text: response.message,
+                                                            timer: 2000,
+                                                            showConfirmButton: false
+                                                        });
+                                                    }
+                                                },
+                                                error: function() {
+                                                    Swal.fire({
+                                                        type: 'error',
+                                                        title: 'Error',
+                                                        text: 'Unexpected error occurred!',
+                                                        timer: 2000,
+                                                        showConfirmButton: false
+                                                    });
+                                                }
+                                            });
+                                        });
+                                    </script>
+
+                                    <!-- Modal Left Over -->
+                                    <div class="modal fade text-left" id="leftoverStock_<?PHP echo $MQ['id']?>" tabindex="-1" role="dialog" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-body text-center">
+                                                        Are you sure this raw material leftover?
+                                                        <br><br>
+                                                        <h2 class="text-warning"><?PHP echo $material[0]['name'] . " #" . $i;?></h2>
+                                                    </div>
+                                                    <form id="leftoverStockForm_<?PHP echo $MQ['id']?>" action="./databases/rawMaterial/manage/leftoverStock.php?id=<?PHP echo $MQ['id']?>" method="post">
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            <button type="submit" class="btn btn-warning text-white">Leftovers</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                        </div>
+                                    </div>
+
+                                    <script>
+                                        $("#leftoverStockForm_<?PHP echo $MQ['id']?>").on('submit', function(e) {
+                                            e.preventDefault();
+
+                                            $.ajax({
+                                                url: $(this).attr("action"),
+                                                type: "POST",
+                                                data: new FormData(this),
+                                                processData: false,
+                                                contentType: false,
+                                                success: function(response) {
+                                                    if(response.status === "success") {
+                                                        Swal.fire({
+                                                            type: 'success',
+                                                            title: 'Success',
+                                                            text: response.message,
+                                                            timer: 2000,
+                                                            showConfirmButton: false,
+                                                        }).then ( () => {
+                                                            location.reload();
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            type: 'error',
+                                                            title: 'Error',
+                                                            text: response.message,
+                                                            timer: 2000,
+                                                            showConfirmButton: false
+                                                        });
+                                                    }
+                                                },
+                                                error: function() {
+                                                    Swal.fire({
+                                                        type: 'error',
+                                                        title: 'Error',
+                                                        text: 'Unexpected error occurred!',
+                                                        timer: 2000,
+                                                        showConfirmButton: false
+                                                    });
+                                                }
+                                            });
+                                        });
+                                    </script>
                                 </tr>
                                 <?PHP $i++; }?>
                             </tbody>

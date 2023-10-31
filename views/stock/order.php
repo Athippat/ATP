@@ -20,14 +20,19 @@
                                                     </button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <div class="row">
+                                                    <!-- <div class="row">
                                                         <div class="col-xl-12">
                                                             <div class="form-group mb-3">
                                                                 <label>Date Select</label>
                                                                 <input type="text" class="form-control date" id="singledaterange" data-toggle="daterangepicker" data-cancel-class="btn-warning">
                                                             </div>
-                                                        </div> <!-- end col -->
-                                                    </div>
+                                                        </div>
+                                                    </div> -->
+
+                                                    <?PHP
+                                                    $stmt = $pdo->query('SELECT * FROM history');
+                                                    $histories = $stmt->fetchAll();
+                                                    ?>
 
                                                     <div class="row">
                                                         <div class="col-12">
@@ -36,28 +41,24 @@
                                                                     <tr>
                                                                         <th>Picture</th>
                                                                         <th>Menu</th>
+                                                                        <th>Serve By</th>
                                                                         <th>DateTime</th>
-                                                                        <th>Manage</th>
                                                                     </tr>
                                                                 </thead>
                                                             
                                                                 <tbody>
-                                                                    <tr>
-                                                                        <td><img class="card-img-top img-fluid" width="25px" src="assets/images/team/team-1.jpg" alt="Card image cap"></td>
-                                                                        <td>Sushi Salmon</td>
-                                                                        <td>18 October 2023 05:32:29</td>
-                                                                        <td>
-                                                                            <button class="btn btn-danger"><i class="mdi mdi-trash-can"></i></button>
-                                                                        </td>
-                                                                    </tr>
+                                                                    <?PHP foreach ($histories as $history){?>
+                                                                        <tr>
+                                                                            <td><img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $history["menu_id"] . '.' . $history["menu_image"]?>" alt="Not have images"></td>
+                                                                            <td><?PHP echo $history["menu_name"]?></td>
+                                                                            <td><?PHP echo $history["serveBy"]?></td>
+                                                                            <td><?PHP echo changeDateTime($history["regDate"])?></td>
+                                                                        </tr>
+                                                                    <?PHP }?>
                                                                 </tbody>
                                                             </table>
                                                         </div><!-- end col-->
                                                     </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                                    <button type="button" class="btn btn-success">Create</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -131,7 +132,7 @@
                             <?PHP }?>
                             <div class="card-body">
                                 <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
-                                <p class="text-muted font-size-13"><?PHP echo $numOfUnit;?> Unit</p>
+                                <p class="text-muted font-size-13"><?PHP echo floor($numOfUnit);?> Unit</p>
 
                                 <div class="row justify-content-center">
                                     <button class="btn btn-success mx-1" id="cfServe_<?PHP echo $menu['id']?>"><i class="mdi mdi-shopping"></i> Serve</button>
