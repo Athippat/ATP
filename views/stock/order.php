@@ -135,7 +135,7 @@
                                 <p class="text-muted font-size-13"><?PHP echo floor($numOfUnit);?> Unit</p>
 
                                 <div class="row justify-content-center">
-                                    <button class="btn btn-success mx-1" id="cfServe_<?PHP echo $menu['id']?>"><i class="mdi mdi-shopping"></i> Serve</button>
+                                    <button class="btn btn-success mx-1" id="cfServe_<?PHP echo $menu['id']?>"><i class="mdi mdi-shopping"></i> On Shelf</button>
 
                                     <script>
                                         $('#cfServe_<?PHP echo $menu['id']?>').click(function () {
@@ -242,7 +242,7 @@
                                 <p class="text-danger font-size-13">Out of raw material</p>
 
                                 <div class="row justify-content-center">        
-                                    <button class="btn btn-success mx-1 disabled"><i class="mdi mdi-shopping"></i> Serve</button>
+                                    <button class="btn btn-success mx-1 disabled"><i class="mdi mdi-shopping"></i> On Shelf</button>
                                 </div>
                             </div>
                         </div> <!-- end card-->
