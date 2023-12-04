@@ -129,13 +129,15 @@ if($id == null){
                 <?PHP if(count($menu_material) == 0){?>
                     <div class="col-xl-3 col-lg-6 text-center">
                         <div class="card">
-                            <?PHP if($menu['image'] == null){?>
-                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
-                            <?PHP }else{?>
-                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
-                            <?PHP }?>
+                            <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                <?PHP if($menu['image'] == null){?>
+                                    <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                                <?PHP }else{?>
+                                    <img height="100%" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                                <?PHP }?>
+                            </div>
                             <div class="card-body">
-                                <h5 class="mb-1"><?PHP echo $menu["name"];?></h5>
+                                <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $menu['name']?>"><?PHP echo $menu["name"];?></h5>
                                 <p class="text-success font-size-13">Add raw materials</p>
 
                                 <div class="row justify-content-center">
@@ -180,13 +182,15 @@ if($id == null){
                 <?PHP if($countRawMaterial > 0){?>
                     <div class="col-xl-3 col-lg-6 text-center">
                         <div class="card">
-                            <?PHP if($menu['image'] == null){?>
-                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
-                            <?PHP }else{?>
-                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
-                            <?PHP }?>
+                            <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                <?PHP if($menu['image'] == null){?>
+                                    <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                                <?PHP }else{?>
+                                    <img height="100%" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                                <?PHP }?>
+                            </div>
                             <div class="card-body">
-                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $menu['name']?>"><?PHP echo $menu["name"]?></h5>
                                 <p class="text-danger font-size-13">Out of raw material</p>
 
                                 <div class="row justify-content-center">
@@ -247,13 +251,15 @@ if($id == null){
                 <?PHP if(count($menu_material) > 0 && $countRawMaterial == 0){?>
                     <div class="col-xl-3 col-lg-6 text-center">
                         <div class="card">
-                            <?PHP if($menu['image'] == null){?>
-                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
-                            <?PHP }else{?>
-                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
-                            <?PHP }?>
+                            <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                <?PHP if($menu['image'] == null){?>
+                                    <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                                <?PHP }else{?>
+                                    <img height="100%" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                                <?PHP }?>
+                            </div>
                             <div class="card-body">
-                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $menu['name']?>"><?PHP echo $menu["name"]?></h5>
                                 <p class="text-muted font-size-13"><?PHP echo floor($numOfUnit)?> Unit</p>
 
                                 <div class="row justify-content-center">
@@ -409,7 +415,7 @@ $menu = $stmt->fetchAll();
                     </div>
 
                     <button type="submit" class="btn btn-warning text-white"><i class="mdi mdi-pencil"></i> Edit</button>
-                    <button type="button" class="btn btn-danger"><i class="mdi mdi-trash-can"></i> Delete</button>
+                    <button type="button" class="btn btn-danger"><i class="mdi mdi-trash-"></i> Delete</button>
                 </form>
 
                 <script>

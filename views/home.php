@@ -5,7 +5,7 @@
             <div class="col-md-4 col-xl-7"></div>
             <div class="col-md-6 col-xl-3">
                 <div class="form-group">
-                    <input type="number" id="sale" name="sale" class="form-control" placeholder="Enter your sales">
+                    <input type="number" id="sale" name="sale" class="form-control" placeholder="Enter your sales" value="20000">
                 </div>
             </div>
             <div class="col-md-2 col-xl-2">
@@ -20,7 +20,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Cost</h6>
-                                <span class="h3 mb-0 text-warning"> $85.50 </span>
+                                <span class="h3 mb-0 text-warning"> ฿ 16,500.00 </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+7.5%</span>
@@ -38,7 +38,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Leftover</h6>
-                                <span class="h3 mb-0 text-danger"> $12,548.25 </span>
+                                <span class="h3 mb-0 text-danger"> ฿ --- </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-danger">-24.5%</span>
@@ -56,7 +56,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Salary</h6>
-                                <span class="h3 mb-0 text-danger"> ฿ --- </span>
+                                <span class="h3 mb-0 text-danger"> ฿ 2,400.00 </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+3.5%</span>
@@ -74,7 +74,7 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Profit</h6>
-                                <span class="h3 mb-0 text-success"> ฿112,584 </span>
+                                <span class="h3 mb-0 text-success"> ฿ 6,100.00 </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+53.5%</span>
@@ -117,6 +117,12 @@
         </div>
         <!-- end row-->
 
+        <div class="row mb-1">
+            <div class="col-12 text-right">
+                <a href="./index.php?page=menu" class="text-secondary"><u>View All</u></a>
+            </div>
+        </div>
+
         <?PHP
         $stmt = $pdo->query('SELECT * FROM menu');
         $menus = $stmt->fetchAll();
@@ -124,6 +130,7 @@
 
         <div class="row">
             <!-- Out of Material -->
+            <?PHP $checkCol = 0;?>
             <?PHP foreach ($menus as $menu) {?>
                 <?PHP
                 $stmt = $pdo->prepare("SELECT * FROM menu_material WHERE menu_id=:menu_id");
@@ -156,13 +163,15 @@
                 <?PHP if($countRawMaterial > 0){?>
                     <div class="col-xl-3 col-lg-6 text-center">
                         <div class="card">
-                            <?PHP if($menu['image'] == null){?>
-                                <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
-                            <?PHP }else{?>
-                                <img class="card-img-top img-fluid" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
-                            <?PHP }?>
+                            <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                <?PHP if($menu['image'] == null){?>
+                                    <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $menu['name']?>">
+                                <?PHP }else{?>
+                                    <img height="100%" src="./pictures/menu/<?PHP echo $menu['id'] . '.' . $menu['image']?>">
+                                <?PHP }?>
+                            </div>
                             <div class="card-body">
-                                <h5 class="mb-1"><?PHP echo $menu["name"]?></h5>
+                                <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $menu['name']?>"><?PHP echo $menu["name"]?></h5>
                                 <p class="text-danger font-size-13">Out of raw material</p>
 
                                 <div class="row justify-content-center">
@@ -173,7 +182,12 @@
                         </div> <!-- end card-->
                     </div> <!-- end col-->
                 <?PHP }?>
-            <?PHP }?>
+            <?PHP
+                $checkCol++;
+                if($checkCol >= 8){
+                    break;
+                }
+            }?>
         </div>
 
         <?PHP

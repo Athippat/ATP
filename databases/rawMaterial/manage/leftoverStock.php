@@ -1,6 +1,8 @@
 <?PHP
 header("Content-Type: application/json");
 
+session_start();
+
 require '../../db-connect.php';
 
 $id = $_GET["id"];
@@ -22,13 +24,14 @@ try{
     $stmt->execute([':id' => $materials[0]['type_id']]);
     $types = $stmt->fetchAll();
 
-    $stmt = $pdo->prepare("INSERT INTO material_leftover (name, unit, type, price, quantity, material_id, material_image) VALUES (:name, :unit, :type, :price, :quantity, :material_id, :material_image)");
+    $stmt = $pdo->prepare("INSERT INTO material_leftover (name, unit, type, price, quantity, leftoverBy, material_id, material_image) VALUES (:name, :unit, :type, :price, :quantity, :leftoverBy, :material_id, :material_image)");
     $stmt->execute([
         ':name' => $materials[0]["name"],
         ':unit' => $units[0]["unit"],
         ':type' => $types[0]["type"],
         ':price' => $material_quantity[0]["price"],
         ':quantity' => $material_quantity[0]["balance"],
+        ':leftoverBy' => $_SESSION["firstname"] . " " . $_SESSION['lastname'] . " (" . $_SESSION['nickname'] . ")",
         ':material_id' => $materials[0]["id"],
         ':material_image' => $materials[0]["image"]
     ]);
@@ -41,5 +44,6 @@ try{
     echo json_encode(["status" => "success", "message" => "This raw material has cleared"]);
 }catch (PDOException $e) {
     echo json_encode(["status" => "error", "message" => "Can't clear this stock."]);
+    echo $e;
 }
 ?>

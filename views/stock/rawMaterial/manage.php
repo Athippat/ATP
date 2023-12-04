@@ -225,13 +225,15 @@ if($id == null){
             <div class="col-xl-3 col-lg-6 text-center">
                 <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
                     <div class="card">
-                        <?PHP if($material['image'] == null){?>
-                            <img class="card-img-top img-fluid" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
-                        <?PHP }else{?>
-                            <img class="card-img-top img-fluid" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
-                        <?PHP }?>
+                        <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                            <?PHP if($material['image'] == null){?>
+                                <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
+                            <?PHP }else{?>
+                                <img height="100%" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
+                            <?PHP }?>
+                        </div>
                         <div class="card-body">
-                            <h5 class="mb-1"><?PHP echo $material['name']?></h5>
+                            <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $material['name']?>"><?PHP echo $material['name']?></h5>
                             <p class="text-muted font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?></p>
                         </div>
                     </div> <!-- end card-->
@@ -273,17 +275,27 @@ $material = $stmt->fetchAll();
 $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
 $stmt->execute([':id' => $material[0]['unit_id']]);
 $unit = $stmt->fetchAll();
+
+$stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id ORDER BY id DESC");
+$stmt->execute([':material_id' => $_GET["id"]]);
+$material_quantity = $stmt->fetchAll();
 ?>
 
 <div class="page-content">
     <div class="container-fluid">
         <div class="row mb-4">
             <div class="col-xl-6">
-                <input type="file" class="dropify" data-height="250"
-                    <?PHP if($material[0]['image'] != null){?>
-                        data-default-file="./pictures/rawMaterial/<?PHP echo $material[0]['id'] . '.' . $material[0]['image']?>"
-                    <?PHP }?>
-                >
+                <form id="uploadImageMaterialForm" action="./databases/rawMaterial/manage/uploadImage.php?id=<?PHP echo $_GET['id']?>" method="POST" enctype="multipart/form-data">
+                    <input type="file" id="fileToUpload" name="fileToUpload" class="dropify" data-height="250"
+                        <?PHP if($material[0]['image'] != null){?>
+                            data-default-file="./pictures/rawMaterial/<?PHP echo $material[0]['id'] . '.' . $material[0]['image']?>"
+                        <?PHP }?>
+                    ><br>
+                    <button type="submit" class="btn btn-primary w-100">Upload Image</button><br><br>
+                </form>
+                <form id="removeImageMaterialForm" action="./databases/rawMaterial/manage/uploadImage.php?id=<?PHP echo $_GET['id']?>&remove=1" method="POST">
+                    <button type="submit" class="btn btn-danger w-100">Remove Image</button><br><br>
+                </form>
             </div> <!-- end col -->
             <div class="col-xl-6">
                 <form id="quantityForm" action="./databases/rawMaterial/manage/addQuantity.php?material_id=<?PHP echo $material[0]['id']?>" method="POST">
@@ -306,10 +318,93 @@ $unit = $stmt->fetchAll();
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-success">Add</button>
+                    <button type="submit" class="btn btn-success"><i class="mdi mdi-plus-circle"></i> Add</button>
+                    <button class="btn btn-danger" <?PHP if($material_quantity) echo 'disabled';?>><i class="mdi mdi-trash-can"></i> Delete</button>
                 </form>
 
                 <script>
+                    $("#uploadImageMaterialForm").on("submit", function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr("action"),
+                            type: "POST",
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.status === "success") {
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Success',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    }).then ( () => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error',
+                                    text: 'Unexpected error occurred!',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    });
+                    $("#removeImageMaterialForm").on("submit", function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr("action"),
+                            type: "POST",
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.status === "success") {
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Success',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    }).then ( () => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error',
+                                    text: 'Unexpected error occurred!',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    });
                     $("#quantityForm").on("submit", function(e) {
                         e.preventDefault();
 
