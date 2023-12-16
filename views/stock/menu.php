@@ -600,7 +600,7 @@ $menu = $stmt->fetchAll();
                                         <td></td>
                                         <td>
                                             <?PHP
-                                            $stmt = $pdo->query('SELECT * FROM material');
+                                            $stmt = $pdo->query('SELECT * FROM material ORDER BY name ASC');
                                             $materials = $stmt->fetchAll();
                                             ?>
                                             

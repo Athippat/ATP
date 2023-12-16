@@ -14,13 +14,26 @@
         </div>
 
         <div class="row">
-            <div class="col-lg-6 col-xl-3">
+            <?PHP
+            $stmt = $pdo->prepare("SELECT * FROM material_cost WHERE DATE(regDate)=:regDate");
+            $stmt->execute([
+                ':regDate' => date("Y-m-d"),
+            ]);
+            $material_cost = $stmt->fetchAll();
+            
+            $total_cost = 0;
+
+            foreach($material_cost as $mc){
+                $total_cost += ($mc['price'] * $mc['quantity']);
+            }
+            ?>
+            <div class="col-lg-12 col-xl-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Cost</h6>
-                                <span class="h3 mb-0 text-warning"> ฿ 16,500.00 </span>
+                                <span class="h3 mb-0 text-warning"> ฿ <?PHP echo number_format($total_cost, 2);?> </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+7.5%</span>
@@ -31,14 +44,27 @@
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
+
+            <?PHP
+            $stmt = $pdo->prepare("SELECT * FROM material_leftover WHERE DATE(regDate)=:regDate");
+            $stmt->execute([
+                ':regDate' => date("Y-m-d"),
+            ]);
+            $material_leftover = $stmt->fetchAll();
             
-            <div class="col-lg-6 col-xl-3">
+            $total_leftover = 0;
+
+            foreach($material_leftover as $ml){
+                $total_leftover += ($ml['price'] * $ml['quantity']);
+            }
+            ?>
+            <div class="col-lg-12 col-xl-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Leftover</h6>
-                                <span class="h3 mb-0 text-danger"> ฿ --- </span>
+                                <span class="h3 mb-0 text-danger"> ฿ <?PHP echo number_format($total_leftover, 2, $_COOKIE[""]);?> </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-danger">-24.5%</span>
@@ -50,25 +76,7 @@
                 </div> <!-- end card-->
             </div> <!-- end col-->
 
-            <div class="col-lg-6 col-xl-3">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Salary</h6>
-                                <span class="h3 mb-0 text-danger"> ฿ 2,400.00 </span>
-                            </div>
-                            <!-- <div class="col-auto">
-                                <span class="badge badge-soft-success">+3.5%</span>
-                            </div> -->
-                        </div> <!-- end row -->
-
-                        <!-- <div id="sparkline3" class="mt-3"></div> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-6 col-xl-3">
+            <div class="col-lg-12 col-xl-4">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">

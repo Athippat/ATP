@@ -28,6 +28,8 @@ try{
         // print_r($material_quantity);
 
         $i = 0;
+        $reminder = $mm["quantity"];
+        $mq = $material_quantity[$i]["balance"];
 
         while(isset($material_quantity[0])){
             if($material_quantity[$i]["balance"] - $mm["quantity"] >= 0){
@@ -36,23 +38,60 @@ try{
                     ':balance' => $material_quantity[$i]["balance"]-$mm["quantity"],
                     ':id' => $material_quantity[$i]["id"]
                 ]);
+
+                // -----------------------------
+                // Add To Material_Cost
+                // -----------------------------
+                $stmt = $pdo->prepare("INSERT INTO material_cost (material_id, price, quantity) VALUE (:material_id, :price, :quantity)");
+                $stmt->execute([
+                    ":material_id" => $mm['material_id'],
+                    ":price" => $material_quantity[$i]["price"],
+                    ":quantity" => $mm["quantity"],
+                ]);
                 break;
             }else{
-                $reminder = $mm["quantity"] - $material_quantity[$i]["balance"];
+                $reminder -= $mq;
 
-                $stmt = $pdo->prepare("UPDATE material_quantity SET balance=:balance WHERE id=:id");
+                // -----------------------------
+                // Add To Material_Cost
+                // -----------------------------
+                $stmt = $pdo->prepare("INSERT INTO material_cost (material_id, price, quantity) VALUE (:material_id, :price, :quantity)");
                 $stmt->execute([
-                    ':balance' => $material_quantity[$i+1]["balance"] - $reminder,
-                    ':id' => $material_quantity[$i+1]["id"]
+                    ":material_id" => $mm['material_id'],
+                    ":price" => $material_quantity[$i]["price"],
+                    ":quantity" => $material_quantity[$i]["balance"],
                 ]);
+                // -----------------------------
 
                 $stmt = $pdo->prepare("UPDATE material_quantity SET balance=:balance WHERE id=:id");
                 $stmt->execute([
                     ':balance' => 0,
                     ':id' => $material_quantity[$i]["id"]
                 ]);
-                break;
+
+                if(($material_quantity[$i+1]["balance"] - $reminder) >= 0){
+                    // -----------------------------
+                    // Add To Material_Cost
+                    // -----------------------------
+                    $stmt = $pdo->prepare("INSERT INTO material_cost (material_id, price, quantity) VALUE (:material_id, :price, :quantity)");
+                    $stmt->execute([
+                        ":material_id" => $mm['material_id'],
+                        ":price" => $material_quantity[$i+1]["price"],
+                        ":quantity" => $reminder,
+                    ]);
+                    // -----------------------------
+
+                    $stmt = $pdo->prepare("UPDATE material_quantity SET balance=:balance WHERE id=:id");
+                    $stmt->execute([
+                        ':balance' => $material_quantity[$i+1]["balance"] - $reminder,
+                        ':id' => $material_quantity[$i+1]["id"]
+                    ]);
+                    break;
+                }
+
+                $mq = $material_quantity[$i+1]["balance"];
             }
+            $i++;
         }
     }
 
