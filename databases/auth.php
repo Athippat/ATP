@@ -20,7 +20,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $_SESSION['lastname'] = $user['lastname'];
             $_SESSION['nickname'] = $user['nickname'];
             $_SESSION['permission'] = $user['permission'];
-            header("Location: ../index.php?page=home");
+            if($_SESSION['permission'] == 0){
+                header("Location: ../index.php?page=order");
+            }else if($_SESSION['permission'] == 1){
+                header("Location: ../index.php?page=home");
+            }else if($_SESSION['permission'] == 2){
+                header("Location: ../index.php?page=rawMaterial_manage");
+            }
             exit;
         } else {
             echo "Invalid password!";

@@ -31,18 +31,14 @@
         <div class="bg-primary">
             <div class="container">
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-3"></div>
+                    <div class="col-6">
                         <div class="d-flex align-items-center min-vh-100">
                             <div class="w-100 d-block bg-white shadow-lg rounded my-5">
                                 <div class="row">
-                                    <div class="col-lg-5 d-none d-lg-block bg-loginn rounded-left"></div>
-                                    <div class="col-lg-7">
+                                    <!-- <div class="col-lg-5 d-none d-lg-block bg-loginn rounded-left"></div> -->
+                                    <div class="col-lg-12">
                                         <div class="p-5">
-                                            <div class="text-center">
-                                                <a href="" class="d-block mb-3">
-                                                    <img src="https://fakeimg.pl/512x512/?text=Logo" width="100px">
-                                                </a>
-                                            </div>
                                             <h1 class="h1 mb-3 text-center">Sign in</h1>
                                             <form action="./databases/auth.php" method="post" class="user">
                                                 <div class="form-group">
@@ -52,25 +48,6 @@
                                                     <input type="password" class="form-control form-control-user" name="password" placeholder="Password" require>
                                                 </div>
                                                 <button type="submit" class="btn btn-success btn-block">Sign in</button>
-
-                                                <div class="text-center mt-4">
-                                                    <h5 class="text-muted font-size-16">Sign in using</h5>
-                                                
-                                                    <ul class="list-inline mt-3 mb-0">
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript: void(0);" class="social-list-item border-primary text-primary"><i class="mdi mdi-facebook"></i></a>
-                                                        </li>
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript: void(0);" class="social-list-item border-danger text-danger"><i class="mdi mdi-google"></i></a>
-                                                        </li>
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript: void(0);" class="social-list-item border-info text-info"><i class="mdi mdi-twitter"></i></a>
-                                                        </li>
-                                                        <li class="list-inline-item">
-                                                            <a href="javascript: void(0);" class="social-list-item border-secondary text-secondary"><i class="mdi mdi-github-circle"></i></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
                                                 
                                             </form>
 
@@ -87,6 +64,7 @@
                             </div> <!-- end .w-100 -->
                         </div> <!-- end .d-flex -->
                     </div> <!-- end col-->
+                    <div class="col-3"></div>
                 </div> <!-- end row -->
             </div>
             <!-- end container -->

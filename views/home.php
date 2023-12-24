@@ -2,15 +2,47 @@
     <div class="container-fluid">
 
         <div class="row">
-            <div class="col-md-4 col-xl-7"></div>
-            <div class="col-md-6 col-xl-3">
+            <div class="col-md-6 col-xl-6">
+                <div class="form-group mb-3">
+                    <input type="text" class="form-control date" id="daterange" data-toggle="daterangepicker" data-cancel-class="btn-danger">
+                </div>
+
+                <script>
+                    var i = 0;
+                    $('#daterange').change(function(){
+                        const dates = $('#daterange').val().split(" - ");
+
+                        const dateFrom = dates[0];
+                        const dateTo = dates[1];
+
+                        $.ajax({
+                            url: './databases/home/searchByDate.php',
+                            type: 'POST',
+                            data: {
+                                dateF: dateFrom,
+                                dateT: dateTo
+                            },
+                            // dataType: 'json',
+                            success: function(response) {
+                                $('#cost').html('฿ ' + response.cost);
+                                $('#leftover').html('฿ ' + response.leftover);
+                            },
+                            error: function(){
+                                console.log("Error");
+                            }
+                        });
+                    });
+                </script>
+            </div>
+            <div class="col-md-3 col-xl-3"></div>
+            <!-- <div class="col-md-3 col-xl-3">
                 <div class="form-group">
                     <input type="number" id="sale" name="sale" class="form-control" placeholder="Enter your sales" value="20000">
                 </div>
             </div>
             <div class="col-md-2 col-xl-2">
                 <button class="btn btn-success w-100">Enter</button>
-            </div>
+            </div> -->
         </div>
 
         <div class="row">
@@ -27,13 +59,13 @@
                 $total_cost += ($mc['price'] * $mc['quantity']);
             }
             ?>
-            <div class="col-lg-12 col-xl-4">
+            <div class="col-lg-12 col-xl-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Cost</h6>
-                                <span class="h3 mb-0 text-warning"> ฿ <?PHP echo number_format($total_cost, 2);?> </span>
+                                <span id="cost" class="h3 mb-0 text-warning"> ฿ <?PHP echo number_format($total_cost, 2);?> </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-success">+7.5%</span>
@@ -58,13 +90,13 @@
                 $total_leftover += ($ml['price'] * $ml['quantity']);
             }
             ?>
-            <div class="col-lg-12 col-xl-4">
+            <div class="col-lg-12 col-xl-6">
                 <div class="card">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col">
                                 <h6 class="text-uppercase font-size-12 text-muted mb-3">Leftover</h6>
-                                <span class="h3 mb-0 text-danger"> ฿ <?PHP echo number_format($total_leftover, 2, $_COOKIE[""]);?> </span>
+                                <span id="leftover" class="h3 mb-0 text-danger"> ฿ <?PHP echo number_format($total_leftover, 2);?> </span>
                             </div>
                             <!-- <div class="col-auto">
                                 <span class="badge badge-soft-danger">-24.5%</span>
@@ -72,24 +104,6 @@
                         </div> <!-- end row -->
 
                         <!-- <div id="sparkline2" class="mt-3"></div> -->
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col-->
-
-            <div class="col-lg-12 col-xl-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row align-items-center">
-                            <div class="col">
-                                <h6 class="text-uppercase font-size-12 text-muted mb-3">Profit</h6>
-                                <span class="h3 mb-0 text-success"> ฿ 6,100.00 </span>
-                            </div>
-                            <!-- <div class="col-auto">
-                                <span class="badge badge-soft-success">+53.5%</span>
-                            </div> -->
-                        </div> <!-- end row -->
-
-                        <!-- <div id="sparkline4" class="mt-3"></div> -->
                     </div> <!-- end card-body-->
                 </div> <!-- end card-->
             </div> <!-- end col-->
@@ -189,13 +203,22 @@
                             </div>
                         </div> <!-- end card-->
                     </div> <!-- end col-->
-                <?PHP }?>
+                    
+                <?PHP
+                    $checkCol++;
+                }?>
             <?PHP
-                $checkCol++;
-                if($checkCol >= 8){
+                
+                if($checkCol >= 4){
                     break;
                 }
             }?>
+
+            <?PHP if($checkCol == 0){?>
+                <div class="col-12 text-center mb-4 text-secondary">
+                    No raw material that out
+                </div>
+            <?PHP }?>
         </div>
 
         <?PHP
@@ -204,7 +227,7 @@
         ?>
 
         <div class="row">
-            <div class="col-xl-8">
+            <div class="col-xl-12">
                 <div class="card">
                     <div class="card-body">
         
@@ -246,12 +269,12 @@
                 </div> <!-- end card-->
             </div> <!-- end col -->
             
-            <div class="col-xl-4">
+            <!-- <div class="col-xl-4">
                 <div class="card">
                     <div class="card-body">
         
                         <h4 class="card-title">Employee Check In</h4>
-                        <!-- <p class="card-subtitle mb-4">Transaction period from 21 July to 25 Aug</p> -->
+                        <p class="card-subtitle mb-4">Transaction period from 21 July to 25 Aug</p>
                         
                         <div class="table-responsive">
                             <table class="table table-borderless table-hover table-centered table-nowrap mb-0">
@@ -350,9 +373,9 @@
                             </table>
                         </div>
 
-                    </div> <!-- end card-body-->
-                </div> <!-- end card-->
-            </div> <!-- end col -->
+                    </div>
+                </div>
+            </div> -->
         </div>
         <!-- end row-->
 

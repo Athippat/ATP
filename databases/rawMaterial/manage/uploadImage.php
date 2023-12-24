@@ -41,7 +41,7 @@ if(isset($_GET["remove"])){
             if(move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file_new)){
                 $stmt = $pdo->prepare("UPDATE material SET image=:image WHERE id=:id");
                 $stmt->execute([':image' => $imageFileType, ':id' => $id]);
-                echo json_encode(["status" => "success", "message" => "You created new menu already."]);
+                echo json_encode(["status" => "success", "message" => "You upload new material picture already."]);
                 exit;
             }else{
                 echo json_encode(["status" => "error", "message" => "Sorry, there was an error uploading your file."]);

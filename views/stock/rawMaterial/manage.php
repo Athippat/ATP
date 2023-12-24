@@ -11,7 +11,7 @@ if($id == null){
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-8">
-                                <form class="form-inline">
+                                <!-- <form class="form-inline">
                                     <div class="form-group">
                                         <label for="inputPassword2" class="mr-2">Search: </label>
                                         <input type="search" class="form-control" id="inputPassword2" placeholder="Search...">
@@ -26,7 +26,7 @@ if($id == null){
                                             <option value="4">Least</option>
                                         </select>
                                     </div>
-                                </form>
+                                </form> -->
                             </div>
                             <div class="col-lg-4">
                                 <div class="text-lg-right mt-3 mt-lg-0">
@@ -145,103 +145,174 @@ if($id == null){
         <!-- end row --> 
 
         <?PHP
-        $stmt = $pdo->query('SELECT * FROM material');
+        $stmt = $pdo->query('SELECT * FROM material ORDER BY type_id');
         $materials = $stmt->fetchAll();
+
+        $tomorrow = date('w', strtotime('+1 day'));
+
+        $checkId = [];
         ?>
 
         <div class="row">
-            <!-- <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=1">
-                    <div class="card bg-danger">
-                        <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="mb-1 text-white">Pork</h5>
-                            <p class="text-white font-size-13">1 KG left</p>
-                            <p class="card-text">
-                                <small class="text-white">(Recommend 400 KG)</small>
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=2">
-                    <div class="card bg-danger">
-                        <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="mb-1 text-white">Meat</h5>
-                            <p class="text-white font-size-13">3 G left</p>
-                            <p class="card-text">
-                                <small class="text-white">(Recommend 800 KG)</small>
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=3">
-                    <div class="card bg-warning">
-                        <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="mb-1 text-white">Sugar</h5>
-                            <p class="text-white font-size-13">4 KG left</p>
-                            <p class="card-text">
-                                <small class="text-white">(Recommend 10 KG)</small>
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-            <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=4">
-                    <div class="card bg-warning">
-                        <img class="card-img-top img-fluid" src="assets/images/team/team-1.jpg" alt="Card image cap">
-                        <div class="card-body">
-                            <h5 class="mb-1 text-white">Oil</h5>
-                            <p class="text-white font-size-13">20 Bottle left</p>
-                            <p class="card-text">
-                                <small class="text-white">(Recommend 200 Bottle)</small>
-                            </p>
-                        </div>
-                    </div>
-                </a>
-            </div> -->
-            <?PHP foreach ($materials as $material) {?>
+            <!-- Red -->
             <?PHP
-            $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
-            $stmt->execute([':id' => $material['unit_id']]);
-            $units = $stmt->fetchAll();
+            foreach($materials as $material){
+                $stmt = $pdo->prepare('SELECT * FROM material_quantity WHERE material_id=:material_id');
+                $stmt->execute([":material_id" => $material['id']]);
+                $material_quantity = $stmt->fetchAll();
 
-            $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
-            $stmt->execute([':material_id' => $material['id']]);
-            $material_quantity = $stmt->fetchAll();
+                $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
+                $stmt->execute([':id' => $material['unit_id']]);
+                $units = $stmt->fetchAll();
 
-            $balance = 0;
 
-            foreach ($material_quantity as $mq){
-                $balance += $mq["balance"];
+                $balance = 0;
+
+                foreach ($material_quantity as $mq){
+                    $balance += $mq["balance"];
+                }
+
+                if(!empty($material_quantity)){
+                    if($balance <= ($material_quantity[0]['quantity']/5)){ ?>
+                        <div class="col-xl-3 col-lg-6 text-center">
+                            <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
+                                <div class="card bg-danger">
+                                    <div class="bg-white" style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                        <?PHP if($material['image'] == null){?>
+                                            <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
+                                        <?PHP }else{?>
+                                            <img height="100%" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
+                                        <?PHP }?>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="mb-1 text-white" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $material['name']?>"><?PHP echo $material['name']?></h5>
+                                        <p class="text-white font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?> left</p>
+                                        <p class="card-text">
+                                            <?PHP
+                                            if ($tomorrow == 5 || $tomorrow == 6) {?>
+                                                <small class="text-white">(Recommend <?PHP echo ($material_quantity[0]['quantity'] * 2) . " " . $units[0]['unit']?>)</small>
+                                            <?PHP } else { ?>
+                                                <small class="text-white">(Recommend <?PHP echo $material_quantity[0]['quantity'] . " " . $units[0]['unit']?>)</small>;
+                                            <?PHP }
+                                            ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    <?PHP 
+                        array_push($checkId, $material['id']);
+                    }
+                }
             }
             ?>
-            <div class="col-xl-3 col-lg-6 text-center">
-                <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
-                    <div class="card">
-                        <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
-                            <?PHP if($material['image'] == null){?>
-                                <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
-                            <?PHP }else{?>
-                                <img height="100%" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
-                            <?PHP }?>
+            <!-- Yellow -->
+            <?PHP
+            foreach($materials as $material){
+                $stmt = $pdo->prepare('SELECT * FROM material_quantity WHERE material_id=:material_id');
+                $stmt->execute([":material_id" => $material['id']]);
+                $material_quantity = $stmt->fetchAll();
+
+                $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
+                $stmt->execute([':id' => $material['unit_id']]);
+                $units = $stmt->fetchAll();
+
+
+                $balance = 0;
+
+                foreach ($material_quantity as $mq){
+                    $balance += $mq["balance"];
+                }
+
+                if(!empty($material_quantity)){
+                    if(($balance <= ($material_quantity[0]['quantity']/2)) && $balance != 0 && ($balance > ($material_quantity[0]['quantity']/5))){?>
+                        <div class="col-xl-3 col-lg-6 text-center">
+                            <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
+                                <div class="card bg-warning">
+                                    <div class="bg-white" style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                        <?PHP if($material['image'] == null){?>
+                                            <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
+                                        <?PHP }else{?>
+                                            <img height="100%" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
+                                        <?PHP }?>
+                                    </div>
+                                    <div class="card-body">
+                                        <h5 class="mb-1 text-white" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $material['name']?>"><?PHP echo $material['name']?></h5>
+                                        <p class="text-white font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?> left</p>
+                                        <p class="card-text">
+                                            <?PHP
+                                            if ($tomorrow == 5 || $tomorrow == 6) {?>
+                                                <small class="text-white">(Recommend <?PHP echo (abs($balance - $material_quantity[0]['quantity']) * 2) . " " . $units[0]['unit']?>)</small>
+                                            <?PHP } else { ?>
+                                                <small class="text-white">(Recommend <?PHP echo abs($balance - $material_quantity[0]['quantity']) . " " . $units[0]['unit']?>)</small>;
+                                            <?PHP }
+                                            ?>
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
                         </div>
-                        <div class="card-body">
-                            <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $material['name']?>"><?PHP echo $material['name']?></h5>
-                            <p class="text-muted font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?></p>
-                        </div>
-                    </div> <!-- end card-->
-                </a>
-            </div> <!-- end col-->
-            <?PHP }?>
+                    <?PHP
+                        array_push($checkId, $material['id']);
+                    }
+                }
+            }
+            ?>
         </div>
-        <!-- end row-->
+            <?PHP
+            $stmt = $pdo->query('SELECT * FROM type');
+            $types = $stmt->fetchAll();
+            ?>
+            <!-- Normal -->
+            <?PHP foreach($types as $type){?>
+                <h2><?PHP echo $type['type']?></h2>
+                <div class="row">
+                    <?PHP
+                    $sql = "SELECT * FROM material WHERE type_id=:type_id";
+                    $stmt = $pdo->prepare($sql);
+                    $stmt->execute(["type_id" => $type['id']]);
+                    $materials = $stmt->fetchAll();    
+                    ?>
+
+                    <?PHP foreach ($materials as $material) {?>
+                    <?PHP
+                    $stmt = $pdo->prepare("SELECT * FROM unit WHERE id=:id");
+                    $stmt->execute([':id' => $material['unit_id']]);
+                    $units = $stmt->fetchAll();
+
+                    $stmt = $pdo->prepare("SELECT * FROM material_quantity WHERE material_id=:material_id");
+                    $stmt->execute([':material_id' => $material['id']]);
+                    $material_quantity = $stmt->fetchAll();
+
+                    $balance = 0;
+
+                    foreach ($material_quantity as $mq){
+                        $balance += $mq["balance"];
+                    }
+                    ?>
+
+                    <?PHP if(!(in_array($material['id'], $checkId))){?>
+                    <div class="col-xl-3 col-lg-6 text-center">
+                        <a href="./?page=rawMaterial_manage&id=<?PHP echo $material['id']?>">
+                            <div class="card">
+                                <div style="aspect-ratio: 16/9; overflow: hidden; display: flex; justify-content: center; align-items: center;">
+                                    <?PHP if($material['image'] == null){?>
+                                        <img height="100%" src="https://fakeimg.pl/1920x1080/?text=<?PHP echo $material['name']?>">
+                                    <?PHP }else{?>
+                                        <img height="100%" src="./pictures/rawMaterial/<?PHP echo $material['id'] . '.' . $material['image']?>">
+                                    <?PHP }?>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="mb-1" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;" title="<?PHP echo $material['name']?>"><?PHP echo $material['name']?></h5>
+                                    <p class="text-muted font-size-13"><?PHP echo $balance . " " . $units[0]['unit']?></p>
+                                </div>
+                            </div> <!-- end card-->
+                        </a>
+                    </div> <!-- end col-->
+                    <?PHP }?>
+                    <?PHP }?>
+                </div>
+            <?PHP }?>
 
         <!-- <div class="row">
             <div class="col-12">
@@ -283,6 +354,7 @@ $material_quantity = $stmt->fetchAll();
 
 <div class="page-content">
     <div class="container-fluid">
+        <h1><?PHP echo $material[0]['name']?></h1>
         <div class="row mb-4">
             <div class="col-xl-6">
                 <form id="uploadImageMaterialForm" action="./databases/rawMaterial/manage/uploadImage.php?id=<?PHP echo $_GET['id']?>" method="POST" enctype="multipart/form-data">
@@ -319,10 +391,70 @@ $material_quantity = $stmt->fetchAll();
                     </div>
 
                     <button type="submit" class="btn btn-success"><i class="mdi mdi-plus-circle"></i> Add</button>
-                    <button class="btn btn-danger" <?PHP if($material_quantity) echo 'disabled';?>><i class="mdi mdi-trash-can"></i> Delete</button>
+                    <button class="btn btn-danger" data-toggle="modal" data-target="#deleteRawmaterial" <?PHP if($material_quantity) echo 'disabled';?>><i class="mdi mdi-trash-can"></i> Delete</button>
                 </form>
 
+                <!-- Modal -->
+                <div class="modal fade text-left" id="deleteRawmaterial" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body text-center">
+                                Do your really want to delete
+                                <br><br>
+                                <h3 class="text-warning"><?PHP echo $material[0]["name"]?></h3>
+                            </div>
+                            <form id="deleteRawmaterialForm" action="./databases/rawMaterial/manage/deleteRawMaterial.php?id=<?PHP echo $material[0]['id']?>" method="post">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
                 <script>
+                    $("#deleteRawmaterialForm").on("submit", function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr("action"),
+                            type: "POST",
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.status === "success") {
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Success',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    }).then ( () => {
+                                        location.href = "./?page=rawMaterial_manage";
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error',
+                                    text: 'Unexpected error occurred!',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    });
                     $("#uploadImageMaterialForm").on("submit", function(e) {
                         e.preventDefault();
 

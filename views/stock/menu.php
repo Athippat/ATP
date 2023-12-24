@@ -415,8 +415,27 @@ $menu = $stmt->fetchAll();
                     </div>
 
                     <button type="submit" class="btn btn-warning text-white"><i class="mdi mdi-pencil"></i> Edit</button>
-                    <button type="button" class="btn btn-danger"><i class="mdi mdi-trash-"></i> Delete</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteMenu"><i class="mdi mdi-trash-"></i> Delete</button>
                 </form>
+
+                <!-- Modal -->
+                <div class="modal fade text-left" id="deleteMenu" tabindex="-1" role="dialog" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered" role="document">
+                        <div class="modal-content">
+                            <div class="modal-body text-center">
+                                Do your really want to delete
+                                <br><br>
+                                <h3 class="text-warning"><?PHP echo $menu[0]["name"]?></h3>
+                            </div>
+                            <form id="deleteMenuForm" action="./databases/menu/delete.php?id=<?PHP echo $menu[0]['id']?>" method="post">
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
                 <script>
                     $("#editMenuForm").on("submit", function(e) {
@@ -438,6 +457,47 @@ $menu = $stmt->fetchAll();
                                         showConfirmButton: false,
                                     }).then ( () => {
                                         location.reload();
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        type: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false
+                                    });
+                                }
+                            },
+                            error: function() {
+                                Swal.fire({
+                                    type: 'error',
+                                    title: 'Error',
+                                    text: 'Unexpected error occurred!',
+                                    timer: 2000,
+                                    showConfirmButton: false
+                                });
+                            }
+                        });
+                    });
+                    $("#deleteMenuForm").on("submit", function(e) {
+                        e.preventDefault();
+
+                        $.ajax({
+                            url: $(this).attr("action"),
+                            type: "POST",
+                            data: new FormData(this),
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                if(response.status === "success") {
+                                    Swal.fire({
+                                        type: 'success',
+                                        title: 'Success',
+                                        text: response.message,
+                                        timer: 2000,
+                                        showConfirmButton: false,
+                                    }).then ( () => {
+                                        location.href = "./?page=menu"
                                     });
                                 } else {
                                     Swal.fire({
@@ -600,15 +660,28 @@ $menu = $stmt->fetchAll();
                                         <td></td>
                                         <td>
                                             <?PHP
-                                            $stmt = $pdo->query('SELECT * FROM material ORDER BY name ASC');
-                                            $materials = $stmt->fetchAll();
+                                            $stmt = $pdo->query('SELECT * FROM type');
+                                            $types = $stmt->fetchAll();
+
+                                            // $stmt = $pdo->query('SELECT * FROM material ORDER BY name ASC');
+                                            // $materials = $stmt->fetchAll();
                                             ?>
                                             
                                             <div class="form-group">
                                                 <select class="form-control mb-3" id="rawMaterial" name="rawMaterial" required>
                                                     <option value="">- Select Raw Material -</option>
-                                                    <?PHP foreach($materials as $material){?>
-                                                        <option value="<?PHP echo $material['id']?>"><?PHP echo $material['name']?></option>
+                                                    <?PHP foreach($types as $type){?>
+                                                        <?PHP
+                                                            $sql = "SELECT * FROM material WHERE type_id=:type_id ORDER BY name ASC";
+                                                            $stmt = $pdo->prepare($sql);
+                                                            $stmt->execute(["type_id" => $type['id']]);
+                                                            $materials = $stmt->fetchAll(); 
+                                                        ?>
+                                                        <optgroup label="<?PHP echo $type["type"]?>">
+                                                            <?PHP foreach($materials as $material){?>
+                                                            <option value="<?PHP echo $material['id']?>"><?PHP echo $material['name']?></option>
+                                                            <?PHP }?>
+                                                        </optgroup>
                                                     <?PHP }?>
                                                 </select>
                                             </div>
