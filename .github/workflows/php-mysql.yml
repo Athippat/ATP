@@ -1,0 +1,44 @@
+name: PHP CI Workflow
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_DATABASE: atp
+          MYSQL_ROOT_PASSWORD: ''
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Set up PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '7.4' # Choose the PHP version you need
+        extensions: mysqli, pdo_mysql
+        coverage: none
+
+    - name: Install Composer dependencies
+      run: composer install --prefer-dist --no-progress --no-suggest
+
+    - name: Check MySQL connection
+      run: |
+        sudo apt-get install -y mysql-client
+        mysql --host 127.0.0.1 --port 3306 --user root --password='' --database atp -e 'SHOW TABLES;'
+
+    - name: Run tests
+      run: # Add your test scripts here (e.g., phpunit)
